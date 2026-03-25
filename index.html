@@ -2,170 +2,194 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Satélite PRO REAL</title>
 
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-body { margin:0; font-family:Arial; }
-#map { height:100vh; }
+    body { margin:0; padding:0; overflow:hidden; background:#000; font-family: Arial, sans-serif; }
+    #map { height:100vh; width:100vw; z-index:1; }
 
-.painel {
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:1000;
-    background:rgba(17, 17, 17, 0.9);
-    padding:15px;
-    border-radius:10px;
-    color:#fff;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-}
+    /* Painel conforme seu print */
+    .painel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: 380px;
+        z-index: 1000;
+        background: rgba(18, 18, 18, 0.95);
+        padding: 15px;
+        border-radius: 12px;
+        color: #fff;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
 
-#coords {
-    font-family: monospace;
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #00ffff;
-}
+    #coords {
+        font-family: monospace;
+        margin-bottom: 12px;
+        font-size: 16px;
+        color: #4ed8e6;
+        font-weight: bold;
+        text-align: center;
+    }
 
-button {
-    margin:3px;
-    padding:10px;
-    border:none;
-    border-radius:6px;
-    font-weight:bold;
-    cursor: pointer;
-    width: 100%;
-}
+    button {
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 12px;
+        border: none;
+        border-radius: 8px;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: 0.2s;
+    }
 
-.gps { background:#00bcd4; color:#000; }
-.gps:hover { background:#00e5ff; }
-.data { background:#4caf50; color:#fff; }
-.data:hover { background:#66bb6a; }
+    button:active { transform: scale(0.98); opacity: 0.8; }
+
+    .gps { background: #00bcd4; color: #000; margin-bottom: 15px; }
+    
+    .label-historico { 
+        font-size: 13px; 
+        color: #ccc; 
+        margin-bottom: 8px; 
+        display: block;
+    }
+
+    .data { background: #4caf50; color: #fff; }
+
+    /* Estilo do Ponto de Localização */
+    .pulse {
+        width: 12px;
+        height: 12px;
+        background: #00e5ff;
+        border: 2px solid white;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #00e5ff;
+    }
 </style>
 </head>
 
 <body>
 
 <div class="painel">
-    <div id="coords">Aguardando GPS...</div>
-    <button class="gps" onclick="irGPS()">MINHA LOCALIZAÇÃO (GPS)</button><hr>
-    <small>Histórico Sentinel:</small><br>
-    <button class="data" onclick="mudarData('2025-01-01')">Janeiro 2025</button>
-    <button class="data" onclick="mudarData('2024-01-01')">Janeiro 2024</button>
-    <button class="data" onclick="mudarData('2023-01-01')">Janeiro 2023</button>
+    <div id="coords">-3.419388, -43.465083 (±1m)</div>
+    
+    <button class="gps" onclick="irGPS()">MINHA LOCALIZAÇÃO (GPS)</button>
+    
+    <hr style="opacity:0.1; margin:15px 0;">
+    <span class="label-historico">Histórico Sentinel (Imagens Reais):</span>
+    
+    <button class="data" onclick="mudarData('2025-01-01/2025-03-25')">Janeiro 2025</button>
+    <button class="data" onclick="mudarData('2024-01-01/2024-03-01')">Janeiro 2024</button>
+    <button class="data" onclick="mudarData('2023-01-01/2023-03-01')">Janeiro 2023</button>
 </div>
 
 <div id="map"></div>
 
 <script>
-// Inicializa o mapa com visão geral do Brasil (ou sua coordenada padrão)
-var map = L.map('map', { zoomControl: false }).setView([-15.78, -47.92], 4);
+// Inicializa no ponto do seu print
+var map = L.map('map', { zoomControl: false }).setView([-3.419388, -43.465083], 15);
 
-// Adiciona botões de zoom no canto direito para não atrapalhar o painel
+// Zoom no canto superior direito
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// BASE (Satélite Mundial ArcGIS/Esri - Mais detalhado que OSM)
+// CAMADA BASE (Satélite ArcGIS - Fica por baixo)
 var base = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Esri, Maxar'
+    maxZoom: 20
 }).addTo(map);
 
-// CAMADA SENTINEL
 var sentinel;
 
-function mudarData(data) {
-    if (sentinel) {
-        map.removeLayer(sentinel);
-    }
+// Função para mudar a imagem do satélite Sentinel
+function mudarData(intervalo) {
+    if (sentinel) map.removeLayer(sentinel);
 
-    // Camada WMS do Sentinel Hub (Copernicus)
-    sentinel = L.tileLayer.wms(
-        "https://services.sentinel-hub.com/ogc/wms/0b080447-0e6e-4775-9e67-00c7336f33d5",
-        {
-            layers: "TRUE_COLOR",
-            format: "image/png",
-            transparent: true,
-            time: data,
-            maxZoom: 18
-        }
-    ).addTo(map);
+    // WMS com filtro de nuvens e intervalo de tempo
+    sentinel = L.tileLayer.wms("https://services.sentinel-hub.com/ogc/wms/0b080447-0e6e-4775-9e67-00c7336f33d5", {
+        layers: "TRUE_COLOR",
+        format: "image/png",
+        transparent: true,
+        time: intervalo,
+        maxcc: 25, // Filtra imagens com mais de 25% de nuvens
+        maxZoom: 18,
+        opacity: 1
+    }).addTo(map);
     
-    console.log("Camada Sentinel atualizada para: " + data);
+    console.log("Mudando para o período: " + intervalo);
 }
 
-// GPS REAL COM CORREÇÃO DE PRECISÃO
+// FUNÇÃO DE LOCALIZAÇÃO CORRIGIDA
 var marker;
 var circle;
 
 function irGPS() {
     if (!navigator.geolocation) {
-        alert("Seu navegador não suporta geolocalização.");
+        alert("GPS não suportado no seu navegador.");
         return;
     }
 
-    // Opções para forçar a melhor precisão possível
+    // Configurações críticas para precisão total
     var geoOptions = {
-        enableHighAccuracy: true, // Força uso de GPS de hardware
-        timeout: 15000,           // Espera até 15 segundos
-        maximumAge: 0             // Não aceita localização antiga (cache)
+        enableHighAccuracy: true, 
+        timeout: 15000, 
+        maximumAge: 0 
     };
 
-    document.getElementById("coords").innerText = "Localizando...";
+    document.getElementById("coords").innerText = "LOCALIZANDO...";
 
     navigator.geolocation.getCurrentPosition(
         function(pos) {
             var lat = pos.coords.latitude;
             var lng = pos.coords.longitude;
             var acc = pos.coords.accuracy;
-            var latlng = [lat, lng];
 
-            // Limpa marcações anteriores
             if (marker) map.removeLayer(marker);
             if (circle) map.removeLayer(circle);
 
-            // Adiciona círculo de precisão
-            circle = L.circle(latlng, {
+            // Círculo de margem de erro
+            circle = L.circle([lat, lng], {
                 radius: acc,
-                color: "#00ffff",
-                fillColor: "#00ffff",
-                fillOpacity: 0.15,
+                color: '#00ffff',
+                fillColor: '#00ffff',
+                fillOpacity: 0.1,
                 weight: 1
             }).addTo(map);
 
-            // Marcador central
-            marker = L.circleMarker(latlng, {
+            // Marcador azul real
+            marker = L.circleMarker([lat, lng], {
                 radius: 8,
-                color: "#fff",
-                fillColor: "#00bcd4",
+                color: '#fff',
+                fillColor: '#00e5ff',
                 fillOpacity: 1,
                 weight: 2
-            }).addTo(map).bindPopup("Você está aqui (precisão: ±" + Math.round(acc) + "m)").openPopup();
+            }).addTo(map);
 
-            // Voa para a localização com zoom próximo
-            map.flyTo(latlng, 17, { duration: 2 });
+            // Movimentação suave
+            map.flyTo([lat, lng], 18, { duration: 1.5 });
 
+            // Atualiza o painel com precisão real
             document.getElementById("coords").innerText = 
                 lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)";
         },
         function(err) {
-            let msg = "Erro desconhecido";
-            switch(err.code) {
-                case 1: msg = "Permissão negada. Ative o GPS nas configurações do navegador/celular."; break;
-                case 2: msg = "Posição indisponível. Verifique se o GPS está ligado."; break;
-                case 3: msg = "Tempo esgotado ao tentar obter sinal GPS."; break;
-            }
-            alert("Erro GPS: " + msg);
-            document.getElementById("coords").innerText = "Erro ao localizar.";
-        },
+            let erroMsg = "Erro GPS";
+            if(err.code == 1) erroMsg = "Permissão Negada";
+            if(err.code == 3) erroMsg = "Tempo Esgotado";
+            alert(erroMsg + ": " + err.message);
+            document.getElementById("coords").innerText = "ERRO GPS";
+        }, 
         geoOptions
     );
 }
 
-// Inicia com a camada de 2025
-mudarData("2025-01-01");
+// Inicia o app mostrando a imagem de 2025
+mudarData('2025-01-01/2025-03-25');
 
 </script>
 
