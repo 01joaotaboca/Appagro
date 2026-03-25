@@ -9,10 +9,9 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <style>
-    body { margin:0; padding:0; overflow:hidden; background:#000; font-family: Arial, sans-serif; }
-    #map { height:100vh; width:100vw; z-index:1; }
+    body { margin:0; padding:0; overflow:hidden; background:#1a1a1a; font-family: Arial, sans-serif; }
+    #map { height:100vh; width:100vw; z-index:1; background:#1a1a1a; }
 
-    /* Painel conforme seu print */
     .painel {
         position: absolute;
         top: 10px;
@@ -20,11 +19,11 @@
         right: 10px;
         max-width: 380px;
         z-index: 1000;
-        background: rgba(18, 18, 18, 0.95);
+        background: rgba(18, 18, 18, 0.98);
         padding: 15px;
         border-radius: 12px;
         color: #fff;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.8);
         border: 1px solid rgba(255,255,255,0.1);
     }
 
@@ -35,12 +34,13 @@
         color: #4ed8e6;
         font-weight: bold;
         text-align: center;
+        letter-spacing: 1px;
     }
 
     button {
         width: 100%;
         margin-bottom: 8px;
-        padding: 12px;
+        padding: 14px;
         border: none;
         border-radius: 8px;
         font-weight: bold;
@@ -50,148 +50,85 @@
         transition: 0.2s;
     }
 
-    button:active { transform: scale(0.98); opacity: 0.8; }
-
-    .gps { background: #00bcd4; color: #000; margin-bottom: 15px; }
-    
-    .label-historico { 
-        font-size: 13px; 
-        color: #ccc; 
-        margin-bottom: 8px; 
-        display: block;
-    }
-
+    .gps { background: #00bcd4; color: #000; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,188,212,0.3); }
     .data { background: #4caf50; color: #fff; }
-
-    /* Estilo do Ponto de Localização */
-    .pulse {
-        width: 12px;
-        height: 12px;
-        background: #00e5ff;
-        border: 2px solid white;
-        border-radius: 50%;
-        box-shadow: 0 0 10px #00e5ff;
-    }
+    .label-historico { font-size: 12px; color: #aaa; margin-bottom: 8px; display: block; text-align: center; }
 </style>
 </head>
 
 <body>
 
 <div class="painel">
-    <div id="coords">-3.419388, -43.465083 (±1m)</div>
+    <div id="coords">LOCALIZANDO GPS...</div>
     
     <button class="gps" onclick="irGPS()">MINHA LOCALIZAÇÃO (GPS)</button>
     
-    <hr style="opacity:0.1; margin:15px 0;">
     <span class="label-historico">Histórico Sentinel (Imagens Reais):</span>
     
-    <button class="data" onclick="mudarData('2025-01-01/2025-03-25')">Janeiro 2025</button>
-    <button class="data" onclick="mudarData('2024-01-01/2024-03-01')">Janeiro 2024</button>
-    <button class="data" onclick="mudarData('2023-01-01/2023-03-01')">Janeiro 2023</button>
+    <button class="data" onclick="mudarData('2025-01-01/2025-03-25')">JANEIRO 2025</button>
+    <button class="data" onclick="mudarData('2024-01-01/2024-05-01')">JANEIRO 2024</button>
+    <button class="data" onclick="mudarData('2023-01-01/2023-05-01')">JANEIRO 2023</button>
 </div>
 
 <div id="map"></div>
 
 <script>
-// Inicializa no ponto do seu print
-var map = L.map('map', { zoomControl: false }).setView([-3.419388, -43.465083], 15);
+// Coordenadas iniciais do seu print
+var inicial = [-3.419348, -43.464929];
+var map = L.map('map', { zoomControl: false }).setView(inicial, 16);
 
-// Zoom no canto superior direito
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// CAMADA BASE (Satélite ArcGIS - Fica por baixo)
+// MAPA BASE - ArcGIS Satélite (Usando link direto mais estável)
 var base = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    maxZoom: 20
+    maxZoom: 19,
+    attribution: 'Esri'
 }).addTo(map);
 
 var sentinel;
 
-// Função para mudar a imagem do satélite Sentinel
-function mudarData(intervalo) {
+function mudarData(periodo) {
     if (sentinel) map.removeLayer(sentinel);
 
-    // WMS com filtro de nuvens e intervalo de tempo
+    // Ajuste na URL do Sentinel para evitar o erro de carregamento
     sentinel = L.tileLayer.wms("https://services.sentinel-hub.com/ogc/wms/0b080447-0e6e-4775-9e67-00c7336f33d5", {
         layers: "TRUE_COLOR",
         format: "image/png",
         transparent: true,
-        time: intervalo,
-        maxcc: 25, // Filtra imagens com mais de 25% de nuvens
-        maxZoom: 18,
-        opacity: 1
+        time: periodo,
+        maxcc: 30, // Aceita até 30% de nuvens para garantir que a imagem apareça
+        version: '1.1.1',
+        maxZoom: 18
     }).addTo(map);
-    
-    console.log("Mudando para o período: " + intervalo);
 }
 
-// FUNÇÃO DE LOCALIZAÇÃO CORRIGIDA
 var marker;
-var circle;
 
 function irGPS() {
-    if (!navigator.geolocation) {
-        alert("GPS não suportado no seu navegador.");
-        return;
-    }
+    if (!navigator.geolocation) return alert("Sem suporte a GPS");
 
-    // Configurações críticas para precisão total
-    var geoOptions = {
-        enableHighAccuracy: true, 
-        timeout: 15000, 
-        maximumAge: 0 
-    };
+    navigator.geolocation.getCurrentPosition(function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
+        var acc = pos.coords.accuracy;
 
-    document.getElementById("coords").innerText = "LOCALIZANDO...";
+        if (marker) map.removeLayer(marker);
 
-    navigator.geolocation.getCurrentPosition(
-        function(pos) {
-            var lat = pos.coords.latitude;
-            var lng = pos.coords.longitude;
-            var acc = pos.coords.accuracy;
+        marker = L.circleMarker([lat, lng], {
+            radius: 8, color: '#fff', fillColor: '#00e5ff', fillOpacity: 1, weight: 2
+        }).addTo(map);
 
-            if (marker) map.removeLayer(marker);
-            if (circle) map.removeLayer(circle);
-
-            // Círculo de margem de erro
-            circle = L.circle([lat, lng], {
-                radius: acc,
-                color: '#00ffff',
-                fillColor: '#00ffff',
-                fillOpacity: 0.1,
-                weight: 1
-            }).addTo(map);
-
-            // Marcador azul real
-            marker = L.circleMarker([lat, lng], {
-                radius: 8,
-                color: '#fff',
-                fillColor: '#00e5ff',
-                fillOpacity: 1,
-                weight: 2
-            }).addTo(map);
-
-            // Movimentação suave
-            map.flyTo([lat, lng], 18, { duration: 1.5 });
-
-            // Atualiza o painel com precisão real
-            document.getElementById("coords").innerText = 
-                lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)";
-        },
-        function(err) {
-            let erroMsg = "Erro GPS";
-            if(err.code == 1) erroMsg = "Permissão Negada";
-            if(err.code == 3) erroMsg = "Tempo Esgotado";
-            alert(erroMsg + ": " + err.message);
-            document.getElementById("coords").innerText = "ERRO GPS";
-        }, 
-        geoOptions
-    );
+        map.flyTo([lat, lng], 17);
+        document.getElementById("coords").innerText = lat.toFixed(6) + ", " + lng.toFixed(6) + " (±" + Math.round(acc) + "m)";
+    }, function(err) {
+        alert("Erro ao localizar. Verifique o GPS.");
+    }, { enableHighAccuracy: true });
 }
 
-// Inicia o app mostrando a imagem de 2025
+// Inicia com a localização do print
+document.getElementById("coords").innerText = inicial[0] + ", " + inicial[1] + " (±2m)";
 mudarData('2025-01-01/2025-03-25');
 
 </script>
-
 </body>
 </html>
