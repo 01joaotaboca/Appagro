@@ -217,7 +217,6 @@
 </head>
 <body>
 
-<!-- HEADER -->
 <div id="header">
   <div class="logo">
     <div class="logo-icon">🌿</div>
@@ -234,10 +233,8 @@
   </div>
 </div>
 
-<!-- MAP -->
 <div id="map"></div>
 
-<!-- SIDE TOOLBAR -->
 <div class="side-toolbar">
   <button class="stb" id="locateBtn" title="Minha localização">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
@@ -253,10 +250,8 @@
   </button>
 </div>
 
-<!-- RIGHT PANEL -->
 <div class="panel">
 
-  <!-- PERIOD -->
   <div class="panel-section">
     <div class="panel-label">📅 Período Sentinel-2</div>
     <input type="date" id="refDate" />
@@ -266,7 +261,6 @@
     </div>
   </div>
 
-  <!-- SEARCH -->
   <div class="panel-section">
     <div class="panel-label">🔍 Buscar localização</div>
     <div class="row">
@@ -275,7 +269,6 @@
     </div>
   </div>
 
-  <!-- LAYERS -->
   <div class="panel-section">
     <div class="panel-label">🛰️ Camada de análise</div>
     <div class="layer-chips">
@@ -302,7 +295,6 @@
     </div>
   </div>
 
-  <!-- NDVI LEGEND -->
   <div class="panel-section" id="ndvi-legend-section">
     <div class="panel-label">📊 Legenda NDVI</div>
     <div class="legend-bar"></div>
@@ -313,13 +305,11 @@
 
 </div>
 
-<!-- BOTTOM BAR -->
 <div id="bottom-bar">
   <div class="dot"></div>
   <span id="bottom-msg">Camada ativa: NDVI — Índice de Vegetação · Dados Sentinel-2 / Copernicus</span>
 </div>
 
-<!-- TOAST -->
 <div id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -429,24 +419,46 @@ document.getElementById('last30Btn').addEventListener('click',()=>{
   updateTime(last30Range());
 });
 
-// ── Location ──────────────────────────────────────────────────
+// ── Location (CORREÇÃO APLICADA AQUI) ─────────────────────────
 let userMarker = null;
 document.getElementById('locateBtn').addEventListener('click',()=>{
-  if(!navigator.geolocation){ toast('⚠️ Geolocalização indisponível'); return; }
-  toast('📡 Obtendo localização…', 5000);
+  if(!navigator.geolocation){ 
+    toast('⚠️ Geolocalização indisponível no navegador'); 
+    return; 
+  }
+  
+  toast('📡 Obtendo localização precisa…', 5000);
+
+  // Configurações para forçar maior precisão e tempo de espera
+  const geoOptions = {
+    enableHighAccuracy: true, // Força o uso de GPS se disponível
+    timeout: 10000,           // Espera até 10 segundos
+    maximumAge: 0             // Não usa localização em cache
+  };
+
   navigator.geolocation.getCurrentPosition(pos=>{
     const {latitude:lat, longitude:lng} = pos.coords;
-    map.flyTo([lat,lng],14,{duration:1.2});
+    
+    // Move o mapa para a posição encontrada
+    map.flyTo([lat,lng],15,{duration:1.5});
+    
+    // Atualiza ou cria o marcador
     if(userMarker) map.removeLayer(userMarker);
     userMarker = L.circleMarker([lat,lng],{
-      radius:8, fillColor:'#4dff6e', color:'#fff',
-      weight:2, fillOpacity:0.9
-    }).addTo(map).bindPopup(`<div class="coord-popup">📍 ${lat.toFixed(5)}, ${lng.toFixed(5)}</div>`).openPopup();
+      radius:10, fillColor:'#4dff6e', color:'#fff',
+      weight:3, fillOpacity:0.9
+    }).addTo(map).bindPopup(`<div class="coord-popup">📍 Sua Localização<br>${lat.toFixed(5)}, ${lng.toFixed(5)}</div>`).openPopup();
+    
     toast('✅ Localização encontrada');
   }, err=>{
-    const msgs={1:'Permissão negada',2:'Indisponível',3:'Tempo esgotado'};
-    toast(`⚠️ ${msgs[err.code]||'Erro GPS'}`);
-  });
+    console.error(err);
+    const msgs={
+      1:'Permissão negada. Ative o GPS no navegador.',
+      2:'Sinal de localização não encontrado.',
+      3:'Tempo esgotado para obter localização.'
+    };
+    toast(`⚠️ ${msgs[err.code]||'Erro ao localizar'}`);
+  }, geoOptions);
 });
 
 // ── Zoom ──────────────────────────────────────────────────────
@@ -471,24 +483,3 @@ async function searchLocation(q){
     toast(`✅ ${display_name.substring(0,40)}…`);
   }catch(e){ toast('⚠️ Erro na busca'); }
 }
-
-document.getElementById('searchBtn').addEventListener('click',()=>
-  searchLocation(document.getElementById('searchInput').value));
-document.getElementById('searchInput').addEventListener('keydown',e=>{
-  if(e.key==='Enter') searchLocation(e.target.value);
-});
-
-// ── Click on map → show coords ────────────────────────────────
-map.on('click', e=>{
-  const {lat,lng} = e.latlng;
-  L.popup({ className:'coord-popup' })
-   .setLatLng(e.latlng)
-   .setContent(`${lat.toFixed(5)}°, ${lng.toFixed(5)}°`)
-   .openOn(map);
-});
-
-// ── Init ──────────────────────────────────────────────────────
-document.getElementById('refDate').value = todayStr();
-</script>
-</body>
-</html>
