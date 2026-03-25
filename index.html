@@ -3,230 +3,190 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mapa Satélite GPS</title>
+<title>Mapa Satélite PRO</title>
+
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: Arial, sans-serif; background: #111; color: #fff; height: 100vh; display: flex; flex-direction: column; }
-  #header {
-    background: #1a1a2e;
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    flex-wrap: wrap;
-    z-index: 1000;
-    border-bottom: 2px solid #0f3460;
-  }
-  #header h1 { font-size: 16px; color: #e0e0e0; white-space: nowrap; }
-  #controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  button {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: bold;
-    transition: all 0.2s;
-  }
-  #btn-gps { background: #16213e; color: #4cc9f0; border: 1px solid #4cc9f0; }
-  #btn-gps:hover { background: #4cc9f0; color: #000; }
-  #btn-gps.loading { background: #555; color: #aaa; border-color: #aaa; cursor: wait; }
-  #btn-satelite { background: #16213e; color: #f0a500; border: 1px solid #f0a500; }
-  #btn-satelite:hover { background: #f0a500; color: #000; }
-  #btn-rua { background: #16213e; color: #7bed9f; border: 1px solid #7bed9f; }
-  #btn-rua:hover { background: #7bed9f; color: #000; }
-  #btn-hibrido { background: #16213e; color: #ff6b6b; border: 1px solid #ff6b6b; }
-  #btn-hibrido:hover { background: #ff6b6b; color: #fff; }
-  #map { flex: 1; width: 100%; }
-  #status {
-    position: fixed;
-    bottom: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.85);
-    color: #fff;
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 13px;
-    z-index: 9999;
-    border: 1px solid #444;
-    max-width: 90vw;
-    text-align: center;
-    display: none;
-  }
-  #status.show { display: block; }
-  #coords {
-    font-size: 12px;
-    color: #aaa;
-    background: #16213e;
-    padding: 5px 10px;
-    border-radius: 6px;
-    min-width: 180px;
-    text-align: center;
-  }
-  .leaflet-control-zoom { border: none !important; }
-  .leaflet-control-zoom a {
-    background: #1a1a2e !important;
-    color: #4cc9f0 !important;
-    border: 1px solid #4cc9f0 !important;
-  }
-  .meu-ponto {
-    background: #4cc9f0;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    box-shadow: 0 0 10px #4cc9f0, 0 0 20px #4cc9f060;
-    animation: pulsar 1.5s infinite;
-  }
-  @keyframes pulsar {
-    0% { box-shadow: 0 0 6px #4cc9f0, 0 0 12px #4cc9f060; }
-    50% { box-shadow: 0 0 14px #4cc9f0, 0 0 28px #4cc9f0aa; }
-    100% { box-shadow: 0 0 6px #4cc9f0, 0 0 12px #4cc9f060; }
-  }
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:Arial;background:#0d1117;color:#fff;height:100vh;display:flex;flex-direction:column;}
+
+#header{
+  background:#111827;
+  padding:10px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:space-between;
+  gap:8px;
+  border-bottom:2px solid #1f2937;
+}
+
+#header h1{font-size:15px;}
+
+#controls{display:flex;gap:6px;flex-wrap:wrap;}
+
+button{
+  padding:7px 12px;
+  border-radius:8px;
+  border:none;
+  font-size:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+#btn-gps{background:#1f2937;color:#00e5ff;border:1px solid #00e5ff;}
+#btn-follow{background:#1f2937;color:#ffd166;border:1px solid #ffd166;}
+#btn-sat{background:#1f2937;color:#00ff88;border:1px solid #00ff88;}
+#btn-hib{background:#1f2937;color:#ff6b6b;border:1px solid #ff6b6b;}
+#btn-map{background:#1f2937;color:#aaa;border:1px solid #aaa;}
+
+#coords{
+  font-size:11px;
+  color:#aaa;
+  background:#020617;
+  padding:4px 8px;
+  border-radius:6px;
+}
+
+#map{flex:1;}
+
+.meu-ponto{
+  background:#00e5ff;
+  border:3px solid #fff;
+  border-radius:50%;
+  animation:pulse 1.5s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 6px #00e5ff;}
+  50%{box-shadow:0 0 18px #00e5ff;}
+  100%{box-shadow:0 0 6px #00e5ff;}
+}
+
+#footer{
+  text-align:center;
+  font-size:10px;
+  padding:4px;
+  background:#020617;
+  color:#666;
+}
 </style>
 </head>
+
 <body>
 
 <div id="header">
-  <h1>🛰️ Mapa Satélite GPS</h1>
+  <h1>🛰️ Satélite PRO</h1>
+
   <div id="controls">
-    <div id="coords">Clique em GPS para localizar</div>
-    <button id="btn-gps" onclick="buscarGPS()">📍 Minha Localização</button>
-    <button id="btn-satelite" onclick="mudarMapa('satelite')">🛰️ Satélite</button>
-    <button id="btn-hibrido" onclick="mudarMapa('hibrido')">🗺️ Híbrido</button>
-    <button id="btn-rua" onclick="mudarMapa('rua')">🏙️ Mapa Normal</button>
+    <div id="coords">---</div>
+    <button id="btn-gps" onclick="localizar()">📍 GPS</button>
+    <button id="btn-follow" onclick="toggleFollow()">🎯 Seguir</button>
+    <button id="btn-sat" onclick="trocar('sat')">Satélite</button>
+    <button id="btn-hib" onclick="trocar('hib')">Híbrido</button>
+    <button id="btn-map" onclick="trocar('map')">Mapa</button>
   </div>
 </div>
 
 <div id="map"></div>
-<div id="status"></div>
+
+<div id="footer">
+Desenvolvido por João Divino Barbosa
+</div>
 
 <script>
-var map = L.map('map', { zoomControl: true }).setView([-15.7801, -47.9292], 5);
 
-var camadas = {
-  satelite: L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    { attribution: '© Esri, USGS, NASA — Imagem de Satélite', maxZoom: 19 }
-  ),
-  rua: L.tileLayer(
-    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    { attribution: '© OpenStreetMap', maxZoom: 19 }
-  ),
-  hibrido: L.layerGroup([
-    L.tileLayer(
-      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      { maxZoom: 19 }
-    ),
-    L.tileLayer(
-      'https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png',
-      { maxZoom: 19, opacity: 0.5 }
-    )
-  ])
-};
+var map = L.map('map').setView([-15,-55],4);
 
-var camadaAtual = camadas.satelite;
-camadaAtual.addTo(map);
+// CAMADAS
+var sat = L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+{maxZoom:21}
+);
 
-var marcadorUsuario = null;
-var circuloUsuario = null;
+var mapNormal = L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{maxZoom:19}
+);
 
-function mudarMapa(tipo) {
-  map.removeLayer(camadaAtual);
-  camadaAtual = camadas[tipo];
-  camadaAtual.addTo(map);
-  mostrarStatus('Modo alterado: ' + (tipo === 'satelite' ? '🛰️ Satélite' : tipo === 'hibrido' ? '🗺️ Híbrido' : '🏙️ Mapa Normal'));
+var hib = L.layerGroup([
+sat,
+L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lines/{z}/{x}/{y}.png',{opacity:0.6})
+]);
+
+var atual = sat.addTo(map);
+
+// GPS
+var marker, circle;
+var follow = false;
+var watchID = null;
+var linha = L.polyline([], {color:"#00e5ff"}).addTo(map);
+
+// TROCAR MAPA
+function trocar(tipo){
+  map.removeLayer(atual);
+
+  if(tipo==='sat') atual = sat;
+  if(tipo==='map') atual = mapNormal;
+  if(tipo==='hib') atual = hib;
+
+  atual.addTo(map);
 }
 
-function mostrarStatus(msg, duracao) {
-  var el = document.getElementById('status');
-  el.textContent = msg;
-  el.classList.add('show');
-  clearTimeout(window._statusTimer);
-  if (duracao !== 0) {
-    window._statusTimer = setTimeout(function() { el.classList.remove('show'); }, duracao || 3500);
+// ATUALIZA COORD
+function coord(lat,lng){
+  document.getElementById('coords').innerText =
+  lat.toFixed(6)+','+lng.toFixed(6);
+}
+
+// GPS 1X
+function localizar(){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    atualizar(pos);
+    map.setView([pos.coords.latitude,pos.coords.longitude],18);
+  });
+}
+
+// SEGUIR
+function toggleFollow(){
+  follow = !follow;
+
+  if(follow){
+    watchID = navigator.geolocation.watchPosition(atualizar);
+  }else{
+    navigator.geolocation.clearWatch(watchID);
   }
 }
 
-function atualizarCoords(lat, lng) {
-  document.getElementById('coords').textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
-}
+// ATUALIZA POSIÇÃO
+function atualizar(pos){
+  let lat = pos.coords.latitude;
+  let lng = pos.coords.longitude;
+  let acc = pos.coords.accuracy;
 
-function buscarGPS() {
-  var btn = document.getElementById('btn-gps');
-  if (!navigator.geolocation) {
-    mostrarStatus('❌ GPS não suportado neste navegador.');
-    return;
+  coord(lat,lng);
+
+  if(marker) map.removeLayer(marker);
+  if(circle) map.removeLayer(circle);
+
+  let icon = L.divIcon({className:'meu-ponto',iconSize:[16,16]});
+
+  marker = L.marker([lat,lng],{icon:icon}).addTo(map);
+
+  circle = L.circle([lat,lng],{
+    radius:acc,
+    color:"#00e5ff",
+    fillOpacity:0.2
+  }).addTo(map);
+
+  linha.addLatLng([lat,lng]);
+
+  if(follow){
+    map.setView([lat,lng]);
   }
-  btn.textContent = '⏳ Localizando...';
-  btn.classList.add('loading');
-  mostrarStatus('📡 Buscando sua localização via GPS...', 0);
-
-  navigator.geolocation.getCurrentPosition(
-    function(pos) {
-      var lat = pos.coords.latitude;
-      var lng = pos.coords.longitude;
-      var acc = pos.coords.accuracy;
-
-      btn.textContent = '📍 Minha Localização';
-      btn.classList.remove('loading');
-      atualizarCoords(lat, lng);
-
-      if (marcadorUsuario) map.removeLayer(marcadorUsuario);
-      if (circuloUsuario) map.removeLayer(circuloUsuario);
-
-      var icone = L.divIcon({
-        className: 'meu-ponto',
-        iconSize: [18, 18],
-        iconAnchor: [9, 9]
-      });
-
-      marcadorUsuario = L.marker([lat, lng], { icon: icone })
-        .addTo(map)
-        .bindPopup(
-          '<b>📍 Você está aqui</b><br>' +
-          'Lat: ' + lat.toFixed(6) + '<br>' +
-          'Lng: ' + lng.toFixed(6) + '<br>' +
-          'Precisão: ~' + Math.round(acc) + 'm'
-        )
-        .openPopup();
-
-      circuloUsuario = L.circle([lat, lng], {
-        radius: acc,
-        color: '#4cc9f0',
-        fillColor: '#4cc9f040',
-        fillOpacity: 0.3,
-        weight: 1.5
-      }).addTo(map);
-
-      map.setView([lat, lng], 17);
-      mostrarStatus('✅ Localizado! Precisão: ~' + Math.round(acc) + ' metros');
-    },
-    function(err) {
-      btn.textContent = '📍 Minha Localização';
-      btn.classList.remove('loading');
-      var msgs = {
-        1: '❌ Permissão negada. Permita o acesso ao GPS no navegador.',
-        2: '❌ Sinal GPS indisponível. Tente em área aberta.',
-        3: '❌ Tempo esgotado. Tente novamente.'
-      };
-      mostrarStatus(msgs[err.code] || '❌ Erro ao obter localização.');
-    },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-  );
 }
 
-map.on('click', function(e) {
-  var lat = e.latlng.lat;
-  var lng = e.latlng.lng;
-  atualizarCoords(lat, lng);
-  L.popup()
-    .setLatLng(e.latlng)
-    .setContent('📌 Lat: ' + lat.toFixed(6) + '<br>Lng: ' + lng.toFixed(6))
-    .openOn(map);
-});
 </script>
 </body>
 </html>
