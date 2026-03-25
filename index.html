@@ -1,485 +1,232 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>AgroMonitor NDVI — Sentinel-2</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg:        #050f05;
-      --surface:   #0c1f0c;
-      --surface2:  #122112;
-      --border:    rgba(100,255,100,0.18);
-      --accent:    #4dff6e;
-      --accent2:   #b8ff7a;
-      --dim:       rgba(180,255,180,0.55);
-      --text:      #e8ffe8;
-      --mono:      'Space Mono', monospace;
-      --sans:      'DM Sans', sans-serif;
-      --radius:    14px;
-      --shadow:    0 8px 32px rgba(0,0,0,.55);
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--sans); }
-
-    /* ── HEADER ─────────────────────────── */
-    #header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
-      height: 52px;
-      background: linear-gradient(90deg, #040d04 0%, #081408 60%, #040d04 100%);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px;
-    }
-
-    .logo {
-      display: flex; align-items: center; gap: 10px;
-      font-family: var(--mono); font-size: .82rem; letter-spacing: .5px; color: var(--accent2);
-    }
-    .logo-icon {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: linear-gradient(135deg, #0d3b0d, #1a6b1a);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; border: 1px solid var(--border);
-    }
-    .logo-name { font-weight: 700; }
-    .logo-sub  { color: var(--dim); font-weight: 400; font-size: .7rem; }
-
-    .header-right { display: flex; align-items: center; gap: 8px; }
-
-    .status-pill {
-      display: flex; align-items: center; gap: 5px;
-      background: rgba(77,255,110,.08); border: 1px solid rgba(77,255,110,.25);
-      border-radius: 20px; padding: 3px 10px; font-size: .65rem;
-      font-family: var(--mono); color: var(--accent);
-    }
-    .status-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
-      box-shadow: 0 0 6px var(--accent);
-      animation: blink 2s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    /* ── MAP ─────────────────────────────── */
-    #map { position: absolute; top: 52px; bottom: 0; left: 0; right: 0; z-index: 1; }
-
-    /* ── SIDE TOOLBAR ───────────────────── */
-    .side-toolbar {
-      position: fixed; left: 12px; top: 68px; z-index: 1500;
-      display: flex; flex-direction: column; gap: 8px;
-    }
-    .stb {
-      width: 40px; height: 40px;
-      background: rgba(12,31,12,.88); border: 1px solid var(--border);
-      border-radius: 10px; color: var(--accent2); font-size: 1rem;
-      cursor: pointer; display: flex; align-items: center; justify-content: center;
-      transition: all .18s; backdrop-filter: blur(6px);
-    }
-    .stb:hover { background: rgba(30,80,30,.9); border-color: var(--accent); transform: scale(1.06); }
-    .stb svg { width: 18px; height: 18px; }
-
-    /* ── RIGHT PANEL ────────────────────── */
-    .panel {
-      position: fixed; top: 64px; right: 12px; z-index: 1500;
-      width: 252px;
-      background: rgba(8,20,8,.94); backdrop-filter: blur(12px);
-      border: 1px solid var(--border); border-radius: 18px;
-      padding: 14px 15px; font-size: .75rem;
-      box-shadow: var(--shadow);
-      display: flex; flex-direction: column; gap: 12px;
-    }
-
-    .panel-section { display: flex; flex-direction: column; gap: 7px; }
-    .panel-label {
-      font-family: var(--mono); font-size: .62rem; letter-spacing: 1px;
-      color: var(--dim); text-transform: uppercase;
-      border-bottom: 1px solid var(--border); padding-bottom: 4px;
-    }
-
-    /* date input */
-    input[type="date"], .txt-input {
-      background: var(--surface2); border: 1px solid rgba(100,255,100,.2);
-      border-radius: 8px; padding: 6px 9px; color: var(--text);
-      font-family: var(--sans); font-size: .73rem; width: 100%;
-      outline: none; transition: border-color .15s;
-    }
-    input[type="date"]:focus, .txt-input:focus { border-color: var(--accent); }
-
-    .row { display: flex; gap: 6px; }
-
-    .btn {
-      border: none; border-radius: 8px; cursor: pointer;
-      font-family: var(--sans); font-size: .72rem; font-weight: 600;
-      padding: 6px 10px; transition: all .15s; white-space: nowrap;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #1e6b1e, #2e9e2e);
-      color: #e8ffe8; flex: 1;
-    }
-    .btn-primary:hover { filter: brightness(1.15); }
-    .btn-secondary {
-      background: var(--surface2); color: var(--dim);
-      border: 1px solid var(--border); flex: 1;
-    }
-    .btn-secondary:hover { border-color: var(--accent); color: var(--accent2); }
-    .btn-icon {
-      background: var(--surface2); color: var(--dim);
-      border: 1px solid var(--border);
-      width: 32px; padding: 0; display: flex; align-items: center; justify-content: center;
-      border-radius: 8px; font-size: .9rem;
-    }
-    .btn-icon:hover { border-color: var(--accent); color: var(--accent); }
-
-    /* Layer chips */
-    .layer-chips { display: flex; flex-direction: column; gap: 5px; }
-    .chip {
-      display: flex; align-items: center; gap: 8px;
-      background: var(--surface2); border: 1px solid var(--border);
-      border-radius: 8px; padding: 6px 9px; cursor: pointer;
-      transition: all .15s; font-size: .72rem;
-    }
-    .chip:hover  { border-color: var(--accent); }
-    .chip.active { border-color: var(--accent); background: rgba(77,255,110,.06); color: var(--accent2); }
-    .chip-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .chip-name { flex: 1; }
-    .chip-badge {
-      font-family: var(--mono); font-size: .58rem;
-      background: rgba(77,255,110,.1); color: var(--accent);
-      padding: 1px 5px; border-radius: 4px;
-    }
-    .chip.active .chip-badge { background: rgba(77,255,110,.18); }
-
-    /* NDVI legend */
-    .legend-bar {
-      height: 10px; border-radius: 20px;
-      background: linear-gradient(90deg, #8b0000, #d73027, #fc8d59, #f7f77a, #91cf60, #1a9850, #004d00);
-    }
-    .legend-labels {
-      display: flex; justify-content: space-between;
-      font-family: var(--mono); font-size: .58rem; color: var(--dim);
-      margin-top: 4px;
-    }
-
-    /* ── BOTTOM BAR ─────────────────────── */
-    #bottom-bar {
-      position: fixed; bottom: 10px; left: 12px; right: 12px; z-index: 1500;
-      background: rgba(5,15,5,.88); backdrop-filter: blur(8px);
-      border: 1px solid var(--border); border-radius: 30px;
-      padding: 7px 16px;
-      display: flex; align-items: center; gap: 8px;
-      font-family: var(--mono); font-size: .65rem; color: var(--dim);
-      pointer-events: none;
-    }
-    #bottom-bar .dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
-    #bottom-msg { flex: 1; }
-
-    /* ── TOAST ──────────────────────────── */
-    #toast {
-      position: fixed; top: 62px; left: 50%; transform: translateX(-50%);
-      background: rgba(5,20,5,.95); border: 1px solid var(--border);
-      color: var(--accent2); border-radius: 30px;
-      padding: 6px 16px; font-family: var(--mono); font-size: .68rem;
-      z-index: 3000; opacity: 0; pointer-events: none;
-      transition: opacity .25s;
-    }
-    #toast.show { opacity: 1; }
-
-    /* ── LEAFLET overrides ──────────────── */
-    .leaflet-control-attribution { display: none; }
-    .leaflet-bar { display: none; }
-
-    /* Coordinates popup  */
-    .coord-popup {
-      background: var(--surface) !important;
-      border: 1px solid var(--border) !important;
-      border-radius: 10px !important;
-      color: var(--text) !important;
-      font-family: var(--mono) !important;
-      font-size: .68rem !important;
-      box-shadow: var(--shadow) !important;
-      padding: 6px 10px !important;
-    }
-    .leaflet-popup-content-wrapper { background: transparent !important; border: none !important; box-shadow: none !important; }
-    .leaflet-popup-tip-container { display: none !important; }
-    .leaflet-popup-content { margin: 0 !important; }
-
-    @media (max-width: 520px) {
-      .panel { width: 220px; right: 8px; padding: 10px 11px; }
-      #header { padding: 0 10px; }
-      .logo-sub { display: none; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Satélite GPS</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Arial, sans-serif; background: #111; color: #fff; height: 100vh; display: flex; flex-direction: column; }
+  #header {
+    background: #1a1a2e;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    z-index: 1000;
+    border-bottom: 2px solid #0f3460;
+  }
+  #header h1 { font-size: 16px; color: #e0e0e0; white-space: nowrap; }
+  #controls { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  button {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  #btn-gps { background: #16213e; color: #4cc9f0; border: 1px solid #4cc9f0; }
+  #btn-gps:hover { background: #4cc9f0; color: #000; }
+  #btn-gps.loading { background: #555; color: #aaa; border-color: #aaa; cursor: wait; }
+  #btn-satelite { background: #16213e; color: #f0a500; border: 1px solid #f0a500; }
+  #btn-satelite:hover { background: #f0a500; color: #000; }
+  #btn-rua { background: #16213e; color: #7bed9f; border: 1px solid #7bed9f; }
+  #btn-rua:hover { background: #7bed9f; color: #000; }
+  #btn-hibrido { background: #16213e; color: #ff6b6b; border: 1px solid #ff6b6b; }
+  #btn-hibrido:hover { background: #ff6b6b; color: #fff; }
+  #map { flex: 1; width: 100%; }
+  #status {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.85);
+    color: #fff;
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 13px;
+    z-index: 9999;
+    border: 1px solid #444;
+    max-width: 90vw;
+    text-align: center;
+    display: none;
+  }
+  #status.show { display: block; }
+  #coords {
+    font-size: 12px;
+    color: #aaa;
+    background: #16213e;
+    padding: 5px 10px;
+    border-radius: 6px;
+    min-width: 180px;
+    text-align: center;
+  }
+  .leaflet-control-zoom { border: none !important; }
+  .leaflet-control-zoom a {
+    background: #1a1a2e !important;
+    color: #4cc9f0 !important;
+    border: 1px solid #4cc9f0 !important;
+  }
+  .meu-ponto {
+    background: #4cc9f0;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4cc9f0, 0 0 20px #4cc9f060;
+    animation: pulsar 1.5s infinite;
+  }
+  @keyframes pulsar {
+    0% { box-shadow: 0 0 6px #4cc9f0, 0 0 12px #4cc9f060; }
+    50% { box-shadow: 0 0 14px #4cc9f0, 0 0 28px #4cc9f0aa; }
+    100% { box-shadow: 0 0 6px #4cc9f0, 0 0 12px #4cc9f060; }
+  }
+</style>
 </head>
 <body>
 
 <div id="header">
-  <div class="logo">
-    <div class="logo-icon">🌿</div>
-    <div>
-      <div class="logo-name">AgroMonitor NDVI</div>
-      <div class="logo-sub">Sentinel-2 · Copernicus</div>
-    </div>
-  </div>
-  <div class="header-right">
-    <div class="status-pill">
-      <div class="status-dot"></div>
-      LIVE · ESA
-    </div>
+  <h1>🛰️ Mapa Satélite GPS</h1>
+  <div id="controls">
+    <div id="coords">Clique em GPS para localizar</div>
+    <button id="btn-gps" onclick="buscarGPS()">📍 Minha Localização</button>
+    <button id="btn-satelite" onclick="mudarMapa('satelite')">🛰️ Satélite</button>
+    <button id="btn-hibrido" onclick="mudarMapa('hibrido')">🗺️ Híbrido</button>
+    <button id="btn-rua" onclick="mudarMapa('rua')">🏙️ Mapa Normal</button>
   </div>
 </div>
 
 <div id="map"></div>
+<div id="status"></div>
 
-<div class="side-toolbar">
-  <button class="stb" id="locateBtn" title="Minha localização">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>
-  </button>
-  <button class="stb" id="zoomInBtn" title="Mais zoom">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-  </button>
-  <button class="stb" id="zoomOutBtn" title="Menos zoom">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-  </button>
-  <button class="stb" id="resetViewBtn" title="Visão Brasil">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-  </button>
-</div>
-
-<div class="panel">
-
-  <div class="panel-section">
-    <div class="panel-label">📅 Período Sentinel-2</div>
-    <input type="date" id="refDate" />
-    <div class="row">
-      <button class="btn btn-primary" id="applyDateBtn">± 7 dias</button>
-      <button class="btn btn-secondary" id="last30Btn">30 dias</button>
-    </div>
-  </div>
-
-  <div class="panel-section">
-    <div class="panel-label">🔍 Buscar localização</div>
-    <div class="row">
-      <input class="txt-input" type="text" id="searchInput" placeholder="Cidade, fazenda, estado…" />
-      <button class="btn btn-icon" id="searchBtn">🔎</button>
-    </div>
-  </div>
-
-  <div class="panel-section">
-    <div class="panel-label">🛰️ Camada de análise</div>
-    <div class="layer-chips">
-      <div class="chip active" data-layer="ndvi">
-        <div class="chip-dot" style="background:#4dff6e;"></div>
-        <span class="chip-name">NDVI</span>
-        <span class="chip-badge">Vegetação</span>
-      </div>
-      <div class="chip" data-layer="natural">
-        <div class="chip-dot" style="background:#7ab8ff;"></div>
-        <span class="chip-name">Cor Real</span>
-        <span class="chip-badge">RGB</span>
-      </div>
-      <div class="chip" data-layer="false">
-        <div class="chip-dot" style="background:#ff7ab8;"></div>
-        <span class="chip-name">Falsa Cor</span>
-        <span class="chip-badge">Infravermelho</span>
-      </div>
-      <div class="chip" data-layer="moisture">
-        <div class="chip-dot" style="background:#7ad4ff;"></div>
-        <span class="chip-name">Umidade</span>
-        <span class="chip-badge">NDWI</span>
-      </div>
-    </div>
-  </div>
-
-  <div class="panel-section" id="ndvi-legend-section">
-    <div class="panel-label">📊 Legenda NDVI</div>
-    <div class="legend-bar"></div>
-    <div class="legend-labels">
-      <span>Solo/-1</span><span>Baixo/0</span><span>Médio/.5</span><span>Alto/1</span>
-    </div>
-  </div>
-
-</div>
-
-<div id="bottom-bar">
-  <div class="dot"></div>
-  <span id="bottom-msg">Camada ativa: NDVI — Índice de Vegetação · Dados Sentinel-2 / Copernicus</span>
-</div>
-
-<div id="toast"></div>
-
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ── Helpers ───────────────────────────────────────────────────
-const WMS_URL = 'https://sh.dataspace.copernicus.eu/ogc/wms/0b080447-0e6e-4775-9e67-00c7336f33d5';
+var map = L.map('map', { zoomControl: true }).setView([-15.7801, -47.9292], 5);
 
-function fmtDate(d){ return d.toISOString().split('T')[0]; }
-
-function todayStr(){ return fmtDate(new Date()); }
-
-function last30Range(){
-  const e = new Date();
-  const s = new Date(); s.setDate(e.getDate()-30);
-  return `${fmtDate(s)}/${fmtDate(e)}`;
-}
-
-function rangeFromCenter(c){
-  const center = new Date(c);
-  if(isNaN(center)) return last30Range();
-  const s = new Date(center); s.setDate(center.getDate()-7);
-  const e = new Date(center); e.setDate(center.getDate()+7);
-  const today = new Date();
-  return `${fmtDate(s)}/${fmtDate(e > today ? today : e)}`;
-}
-
-// ── Toast ─────────────────────────────────────────────────────
-let toastTimer;
-function toast(msg, dur=3200){
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=> el.classList.remove('show'), dur);
-}
-
-// ── Map init ──────────────────────────────────────────────────
-const map = L.map('map',{ zoomControl:false, attributionControl:false })
-             .setView([-15.5,-52],5);
-
-L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-  maxZoom:18
-}).addTo(map);
-
-// ── WMS layers ────────────────────────────────────────────────
-let timeRange = last30Range();
-
-function makeWMS(layerName, opacity=0.95){
-  return L.tileLayer.wms(WMS_URL,{
-    layers: layerName, format:'image/png', transparent:true,
-    time: timeRange, maxZoom:18, opacity
-  });
-}
-
-const LAYERS = {
-  ndvi:     makeWMS('NDVI'),
-  natural:  makeWMS('NATURAL-COLOR', 0.9),
-  false:    makeWMS('FALSE-COLOR', 0.9),
-  moisture: makeWMS('MOISTURE-INDEX')
+var camadas = {
+  satelite: L.tileLayer(
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { attribution: '© Esri, USGS, NASA — Imagem de Satélite', maxZoom: 19 }
+  ),
+  rua: L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { attribution: '© OpenStreetMap', maxZoom: 19 }
+  ),
+  hibrido: L.layerGroup([
+    L.tileLayer(
+      'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+      { maxZoom: 19 }
+    ),
+    L.tileLayer(
+      'https://stamen-tiles.a.ssl.fastly.net/toner-hybrid/{z}/{x}/{y}.png',
+      { maxZoom: 19, opacity: 0.5 }
+    )
+  ])
 };
 
-const LAYER_NAMES = {
-  ndvi:     'NDVI — Índice de Vegetação',
-  natural:  'Cor Real (RGB)',
-  false:    'Falsa Cor (Infravermelho)',
-  moisture: 'Índice de Umidade (NDWI)'
-};
+var camadaAtual = camadas.satelite;
+camadaAtual.addTo(map);
 
-let activeKey = 'ndvi';
-LAYERS[activeKey].addTo(map);
+var marcadorUsuario = null;
+var circuloUsuario = null;
 
-function switchLayer(key){
-  if(key === activeKey) return;
-  map.removeLayer(LAYERS[activeKey]);
-  activeKey = key;
-  LAYERS[key].setParams({ time: timeRange });
-  LAYERS[key].addTo(map);
-  document.querySelectorAll('.chip').forEach(c=>{
-    c.classList.toggle('active', c.dataset.layer === key);
-  });
-  document.getElementById('bottom-msg').textContent =
-    `Camada ativa: ${LAYER_NAMES[key]} · Período: ${timeRange}`;
-  document.getElementById('ndvi-legend-section').style.display =
-    key==='ndvi' ? '' : 'none';
-  toast(`Camada: ${LAYER_NAMES[key]}`);
+function mudarMapa(tipo) {
+  map.removeLayer(camadaAtual);
+  camadaAtual = camadas[tipo];
+  camadaAtual.addTo(map);
+  mostrarStatus('Modo alterado: ' + (tipo === 'satelite' ? '🛰️ Satélite' : tipo === 'hibrido' ? '🗺️ Híbrido' : '🏙️ Mapa Normal'));
 }
 
-document.querySelectorAll('.chip').forEach(c=>{
-  c.addEventListener('click', ()=> switchLayer(c.dataset.layer));
-});
-
-// ── Time update ───────────────────────────────────────────────
-function updateTime(range){
-  timeRange = range;
-  Object.values(LAYERS).forEach(l=> l.setParams({ time: range }));
-  document.getElementById('bottom-msg').textContent =
-    `Camada ativa: ${LAYER_NAMES[activeKey]} · Período: ${range}`;
-  toast(`🛰️ Período atualizado: ${range}`);
-}
-
-document.getElementById('applyDateBtn').addEventListener('click',()=>{
-  const v = document.getElementById('refDate').value;
-  updateTime(rangeFromCenter(v || todayStr()));
-});
-
-document.getElementById('last30Btn').addEventListener('click',()=>{
-  document.getElementById('refDate').value = todayStr();
-  updateTime(last30Range());
-});
-
-// ── Location (CORREÇÃO APLICADA AQUI) ─────────────────────────
-let userMarker = null;
-document.getElementById('locateBtn').addEventListener('click',()=>{
-  if(!navigator.geolocation){ 
-    toast('⚠️ Geolocalização indisponível no navegador'); 
-    return; 
+function mostrarStatus(msg, duracao) {
+  var el = document.getElementById('status');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(window._statusTimer);
+  if (duracao !== 0) {
+    window._statusTimer = setTimeout(function() { el.classList.remove('show'); }, duracao || 3500);
   }
-  
-  toast('📡 Obtendo localização precisa…', 5000);
-
-  // Configurações para forçar maior precisão e tempo de espera
-  const geoOptions = {
-    enableHighAccuracy: true, // Força o uso de GPS se disponível
-    timeout: 10000,           // Espera até 10 segundos
-    maximumAge: 0             // Não usa localização em cache
-  };
-
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const {latitude:lat, longitude:lng} = pos.coords;
-    
-    // Move o mapa para a posição encontrada
-    map.flyTo([lat,lng],15,{duration:1.5});
-    
-    // Atualiza ou cria o marcador
-    if(userMarker) map.removeLayer(userMarker);
-    userMarker = L.circleMarker([lat,lng],{
-      radius:10, fillColor:'#4dff6e', color:'#fff',
-      weight:3, fillOpacity:0.9
-    }).addTo(map).bindPopup(`<div class="coord-popup">📍 Sua Localização<br>${lat.toFixed(5)}, ${lng.toFixed(5)}</div>`).openPopup();
-    
-    toast('✅ Localização encontrada');
-  }, err=>{
-    console.error(err);
-    const msgs={
-      1:'Permissão negada. Ative o GPS no navegador.',
-      2:'Sinal de localização não encontrado.',
-      3:'Tempo esgotado para obter localização.'
-    };
-    toast(`⚠️ ${msgs[err.code]||'Erro ao localizar'}`);
-  }, geoOptions);
-});
-
-// ── Zoom ──────────────────────────────────────────────────────
-document.getElementById('zoomInBtn').addEventListener('click',  ()=> map.zoomIn());
-document.getElementById('zoomOutBtn').addEventListener('click', ()=> map.zoomOut());
-document.getElementById('resetViewBtn').addEventListener('click',()=> map.flyTo([-15.5,-52],5,{duration:1}));
-
-// ── Search (Nominatim) ────────────────────────────────────────
-async function searchLocation(q){
-  if(!q.trim()) return;
-  toast(`🔍 Buscando "${q}"…`, 5000);
-  try{
-    const r = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1&countrycodes=br`);
-    const d = await r.json();
-    if(!d.length){ toast('❌ Local não encontrado'); return; }
-    const {lat,lon,display_name} = d[0];
-    map.flyTo([+lat,+lon],13,{duration:1.2});
-    if(userMarker) map.removeLayer(userMarker);
-    userMarker = L.circleMarker([+lat,+lon],{
-      radius:8, fillColor:'#b8ff7a', color:'#fff', weight:2, fillOpacity:.9
-    }).addTo(map).bindPopup(`<div class="coord-popup">📍 ${display_name.substring(0,70)}</div>`).openPopup();
-    toast(`✅ ${display_name.substring(0,40)}…`);
-  }catch(e){ toast('⚠️ Erro na busca'); }
 }
+
+function atualizarCoords(lat, lng) {
+  document.getElementById('coords').textContent = lat.toFixed(6) + ', ' + lng.toFixed(6);
+}
+
+function buscarGPS() {
+  var btn = document.getElementById('btn-gps');
+  if (!navigator.geolocation) {
+    mostrarStatus('❌ GPS não suportado neste navegador.');
+    return;
+  }
+  btn.textContent = '⏳ Localizando...';
+  btn.classList.add('loading');
+  mostrarStatus('📡 Buscando sua localização via GPS...', 0);
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      var lat = pos.coords.latitude;
+      var lng = pos.coords.longitude;
+      var acc = pos.coords.accuracy;
+
+      btn.textContent = '📍 Minha Localização';
+      btn.classList.remove('loading');
+      atualizarCoords(lat, lng);
+
+      if (marcadorUsuario) map.removeLayer(marcadorUsuario);
+      if (circuloUsuario) map.removeLayer(circuloUsuario);
+
+      var icone = L.divIcon({
+        className: 'meu-ponto',
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+      });
+
+      marcadorUsuario = L.marker([lat, lng], { icon: icone })
+        .addTo(map)
+        .bindPopup(
+          '<b>📍 Você está aqui</b><br>' +
+          'Lat: ' + lat.toFixed(6) + '<br>' +
+          'Lng: ' + lng.toFixed(6) + '<br>' +
+          'Precisão: ~' + Math.round(acc) + 'm'
+        )
+        .openPopup();
+
+      circuloUsuario = L.circle([lat, lng], {
+        radius: acc,
+        color: '#4cc9f0',
+        fillColor: '#4cc9f040',
+        fillOpacity: 0.3,
+        weight: 1.5
+      }).addTo(map);
+
+      map.setView([lat, lng], 17);
+      mostrarStatus('✅ Localizado! Precisão: ~' + Math.round(acc) + ' metros');
+    },
+    function(err) {
+      btn.textContent = '📍 Minha Localização';
+      btn.classList.remove('loading');
+      var msgs = {
+        1: '❌ Permissão negada. Permita o acesso ao GPS no navegador.',
+        2: '❌ Sinal GPS indisponível. Tente em área aberta.',
+        3: '❌ Tempo esgotado. Tente novamente.'
+      };
+      mostrarStatus(msgs[err.code] || '❌ Erro ao obter localização.');
+    },
+    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+  );
+}
+
+map.on('click', function(e) {
+  var lat = e.latlng.lat;
+  var lng = e.latlng.lng;
+  atualizarCoords(lat, lng);
+  L.popup()
+    .setLatLng(e.latlng)
+    .setContent('📌 Lat: ' + lat.toFixed(6) + '<br>Lng: ' + lng.toFixed(6))
+    .openOn(map);
+});
+</script>
+</body>
+</html>
