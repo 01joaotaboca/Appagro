@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0d1a07">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Agro Pro">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="description" content="Sistema de registro de campo para operadores agrícolas">
+<link rel="manifest" href="manifest.json">
+
+<!-- Ícone Apple Touch -->
+<link rel="apple-touch-icon" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+
+<!-- Splash screens Apple (iPhone / iPad) -->
+<!-- iPhone SE / 5 -->
+<link rel="apple-touch-startup-image" media="(device-width:320px) and (device-height:568px) and (-webkit-device-pixel-ratio:2)" href="splash-640x1136.png">
+<!-- iPhone 6/7/8 -->
+<link rel="apple-touch-startup-image" media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2)" href="splash-750x1334.png">
+<!-- iPhone X/XS/11 Pro -->
+<link rel="apple-touch-startup-image" media="(device-width:375px) and (device-height:812px) and (-webkit-device-pixel-ratio:3)" href="splash-1125x2436.png">
+<!-- iPhone XR/11 -->
+<link rel="apple-touch-startup-image" media="(device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:2)" href="splash-828x1792.png">
+<!-- iPhone XS Max/11 Pro Max -->
+<link rel="apple-touch-startup-image" media="(device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:3)" href="splash-1242x2688.png">
+<!-- iPhone 12/13/14 -->
+<link rel="apple-touch-startup-image" media="(device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3)" href="splash-1170x2532.png">
+<!-- iPhone 12/13/14 Pro Max -->
+<link rel="apple-touch-startup-image" media="(device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3)" href="splash-1284x2778.png">
+<!-- iPhone 15/16 Pro -->
+<link rel="apple-touch-startup-image" media="(device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3)" href="splash-1179x2556.png">
+<!-- iPhone 15/16 Pro Max -->
+<link rel="apple-touch-startup-image" media="(device-width:430px) and (device-height:932px) and (-webkit-device-pixel-ratio:3)" href="splash-1290x2796.png">
+<!-- iPad -->
+<link rel="apple-touch-startup-image" media="(device-width:768px) and (device-height:1024px) and (-webkit-device-pixel-ratio:2)" href="splash-1536x2048.png">
+<!-- iPad Pro 11" -->
+<link rel="apple-touch-startup-image" media="(device-width:834px) and (device-height:1194px) and (-webkit-device-pixel-ratio:2)" href="splash-1668x2388.png">
+<!-- iPad Pro 12.9" -->
+<link rel="apple-touch-startup-image" media="(device-width:1024px) and (device-height:1366px) and (-webkit-device-pixel-ratio:2)" href="splash-2048x2732.png">
+
+<title>Agro Pro — Sistema de Campo</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--soil:#0d1a07;--bark:#1c2e10;--fern:#3d6e22;--lime:#6db33f;--straw:#d4a837;--amber:#e8821a;--rust:#c0392b;--cream:#f5f0e8;--paper:#ede8dd;--sand:#b8ae9c;--ink:#1c1a16;--muted:#6b6355;--sky:#1a3a5c;--card:#ffffff;--border:#ddd6c8;--soft-red:#fdf0ef;--soft-green:#eef7e8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+body{background:var(--paper);font-family:'DM Sans',sans-serif;color:var(--ink);padding-bottom:100px;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(0,0,0,0.03) 39px,rgba(0,0,0,0.03) 40px);min-height:100vh}
+.nav-top{background:var(--soil);display:flex;align-items:stretch;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--lime);overflow:hidden}
+.nav-logo{display:flex;align-items:center;padding:0 12px;gap:7px;border-right:1px solid rgba(109,179,63,0.25);flex-shrink:0}
+.nav-logo-icon{width:24px;height:24px;background:var(--lime);border-radius:5px;display:flex;align-items:center;justify-content:center}
+.nav-logo-icon svg{width:13px;height:13px}
+.nav-logo-text{font-family:'Bebas Neue',sans-serif;font-size:18px;color:white;letter-spacing:2px}
+.nav-logo-text span{color:var(--lime)}
+.nav-tabs{display:flex;flex:1}
+.nav-btn{flex:1;padding:13px 4px;border:none;color:rgba(255,255,255,0.45);font-family:'DM Sans',sans-serif;font-weight:700;font-size:9.5px;letter-spacing:0.8px;text-transform:uppercase;background:transparent;cursor:pointer;transition:all 0.2s;position:relative}
+.nav-btn::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--lime);transform:scaleX(0);transition:transform 0.2s}
+.nav-btn.active{color:white}.nav-btn.active::after{transform:scaleX(1)}
+.container{padding:16px;max-width:480px;margin:auto}
+.hero{background:var(--soil);border-radius:18px;margin-bottom:14px;overflow:hidden;position:relative}
+.hero-stripe{height:5px;background:repeating-linear-gradient(90deg,var(--lime) 0,var(--lime) 18px,transparent 18px,transparent 24px)}
+.hero-body{padding:18px 20px 20px;position:relative}
+.hero-tag{display:inline-block;background:rgba(109,179,63,0.15);border:1px solid rgba(109,179,63,0.35);color:var(--lime);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;padding:3px 8px;border-radius:4px;margin-bottom:10px;text-transform:uppercase}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:38px;color:white;letter-spacing:3px;line-height:1;margin-bottom:6px}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.45);letter-spacing:0.5px}
+.hero-decor{position:absolute;right:20px;top:50%;transform:translateY(-50%);opacity:0.08;pointer-events:none}
+.card{background:var(--card);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--fern),var(--lime))}
+.section-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-label .dot{width:6px;height:6px;background:var(--lime);border-radius:50%;flex-shrink:0}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+input:not([type="checkbox"]),select,textarea{width:100%;padding:12px 14px;margin-bottom:10px;border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:var(--cream);transition:border-color 0.2s,background 0.2s;appearance:none;-webkit-appearance:none}
+input:not([type="checkbox"]):focus,select:focus,textarea:focus{outline:none;border-color:var(--lime);background:#fff}
+select{background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b6355'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:34px}
+textarea{resize:vertical;line-height:1.5}
+.flex-row{display:flex;gap:8px}.flex-row>*{margin-bottom:10px}
+.check-grid{display:flex;flex-direction:column;gap:6px}
+.check-item{display:flex;align-items:center;gap:12px;background:var(--cream);padding:12px 14px;border-radius:10px;border:1.5px solid var(--border);cursor:pointer;transition:all 0.2s;user-select:none}
+.check-item:has(input:checked){background:var(--soft-green);border-color:#9ed079}
+.check-item input[type="checkbox"]{width:18px!important;height:18px!important;min-width:18px;margin:0!important;padding:0!important;accent-color:var(--fern);cursor:pointer;flex-shrink:0;appearance:auto;-webkit-appearance:checkbox}
+.check-item span{font-size:13px;font-weight:500}
+.horimetro-panel{background:var(--soil);border-radius:18px;overflow:hidden;margin-bottom:12px}
+.hori-header{background:var(--bark);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(109,179,63,0.2)}
+.hori-header-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--lime)}
+.hori-status-dot{width:8px;height:8px;border-radius:50%;background:var(--sand)}
+.hori-status-dot.active{background:var(--lime);box-shadow:0 0 0 3px rgba(109,179,63,0.2);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 3px rgba(109,179,63,0.2)}50%{box-shadow:0 0 0 6px rgba(109,179,63,0.05)}}
+.hori-body{padding:20px}
+.hori-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.hori-field label{display:block;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(109,179,63,0.7);margin-bottom:6px}
+.hori-field input{background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);color:white;text-align:center;font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;margin-bottom:0;padding:12px;border-radius:10px}
+.hori-field input:focus{border-color:var(--lime);background:rgba(109,179,63,0.08)}
+.hori-field input::placeholder{color:rgba(255,255,255,0.2)}
+.total-block{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;text-align:center;margin-bottom:16px}
+.total-number{font-family:'Bebas Neue',sans-serif;font-size:68px;color:var(--lime);line-height:1;letter-spacing:4px}
+.total-unit{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:rgba(109,179,63,0.6);text-transform:uppercase;margin-top:2px}
+.mini-status{font-size:11px;color:rgba(255,255,255,0.3);text-align:center;margin-top:8px;font-family:'DM Mono',monospace}
+.status-trava{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.4);color:#e07060;padding:10px 14px;border-radius:10px;margin-bottom:14px;text-align:center;font-weight:700;font-size:12px;display:none}
+.progress-bar-wrap{background:rgba(255,255,255,0.08);border-radius:4px;height:4px;overflow:hidden;margin-top:10px}
+.progress-bar-fill{height:100%;background:var(--lime);border-radius:4px;transition:width 0.5s ease;min-width:0}
+.btn{width:100%;padding:15px;border-radius:12px;border:none;color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;margin-bottom:8px;transition:transform 0.15s,opacity 0.15s;position:relative;overflow:hidden}
+.btn::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,0);transition:background 0.15s}
+.btn:hover::after{background:rgba(255,255,255,0.08)}.btn:active{transform:scale(0.98)}
+.btn:disabled{opacity:0.3;cursor:not-allowed}
+.btn-start{background:var(--fern)}.btn-stop{background:var(--rust)}.btn-pdf{background:var(--sky)}.btn-warning{background:var(--amber)}
+/* ── BOTÕES INICIAR / FINALIZAR ── */
+.turno-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.btn-iniciar{background:linear-gradient(135deg,#2d5a1b,var(--fern));border:none;border-radius:14px;padding:20px 10px;color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s,transform 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:90px;justify-content:center}
+.btn-iniciar:active{transform:scale(0.97)}
+.btn-iniciar:disabled{opacity:0.3;cursor:not-allowed}
+.btn-finalizar{background:linear-gradient(135deg,#7a1010,var(--rust));border:none;border-radius:14px;padding:20px 10px;color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity 0.2s,transform 0.15s;display:flex;flex-direction:column;align-items:center;gap:8px;min-height:90px;justify-content:center}
+.btn-finalizar:active{transform:scale(0.97)}
+.btn-finalizar:disabled{opacity:0.3;cursor:not-allowed}
+.btn-turno-icon{width:32px;height:32px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.btn-turno-icon svg{width:28px;height:28px}
+.btn-turno-hora{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;opacity:0.75;font-weight:400;text-transform:none}
+.turno-andamento{background:rgba(109,179,63,0.08);border:1px solid rgba(109,179,63,0.25);border-radius:12px;padding:14px 16px;text-align:center;margin-bottom:14px;display:none}
+.turno-andamento-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(109,179,63,0.6);margin-bottom:4px}
+.turno-andamento-hora{font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--lime);letter-spacing:4px;line-height:1}
+.turno-resumo{background:rgba(255,255,255,0.04);border:1px solid rgba(109,179,63,0.25);border-radius:12px;padding:14px 16px;margin-bottom:14px;display:none}
+.turno-resumo-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.turno-resumo-row:last-child{border-bottom:none}
+.turno-resumo-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,0.45);text-transform:uppercase}
+.turno-resumo-val{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--lime);letter-spacing:2px}
+.turno-resumo-val.hori{color:var(--straw)}
+.lista-ocorrencias{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.ocorrencia-tag{display:inline-flex;align-items:center;gap:8px;background:#fff8ec;border:1.5px solid var(--straw);padding:6px 10px;border-radius:8px;font-size:12px;font-weight:600;color:#7a5900}
+.ocorrencia-tag button{border:none;background:none;color:var(--rust);cursor:pointer;font-size:14px;padding:0;width:auto;margin:0;line-height:1}
+.ocorrencia-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
+.ocorrencia-row select{flex:1;margin-bottom:0}
+.btn-relatar{background:var(--rust);color:white;border:none;padding:12px 16px;border-radius:10px;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;flex-shrink:0}
+.btn-relatar:hover{opacity:0.88}
+.intel-wrap{display:flex;flex-direction:column;gap:10px}
+.intel-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;width:max-content}
+.intel-ok{background:#e8f5df;color:#2d5a1b;border:1.5px solid #b3d98a}
+.intel-alerta{background:#fef3e2;color:#8a4f00;border:1.5px solid #f0be6d}
+.intel-critico{background:#fdeeee;color:#a02020;border:1.5px solid #e7afa9}
+.intel-box{background:var(--cream);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px}
+.intel-title{font-weight:700;font-size:13px;margin-bottom:6px}
+.intel-list{padding-left:16px;color:var(--ink);font-size:13px}.intel-list li{margin-bottom:5px}
+.intel-muted{color:var(--muted);font-size:12px}
+.hist-empty{text-align:center;padding:40px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:1px}
+.hist-card{background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;border:1px solid var(--border);position:relative;overflow:hidden;transition:transform 0.15s;cursor:pointer}
+.hist-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:linear-gradient(180deg,var(--fern),var(--lime))}
+.hist-card:hover{transform:translateX(2px)}
+.hist-card-inner{padding-left:12px}
+.hist-card-title{font-weight:700;font-size:15px;padding-right:80px}
+.hist-card-sub{font-size:11px;color:var(--muted);margin-top:3px;font-family:'DM Mono',monospace}
+.hist-card-horas{font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--fern);letter-spacing:2px;margin-top:8px;line-height:1}
+.hist-horas-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase}
+.hist-card-ocorr{font-size:11px;color:var(--rust);margin-top:6px;font-weight:600}
+.hist-card-actions{position:absolute;top:14px;right:14px;display:flex;gap:6px}
+.btn-hist-pdf{background:var(--sky);color:white;border:none;padding:6px 10px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:opacity 0.15s}
+.btn-hist-pdf:hover{opacity:0.85}
+.btn-hist-del{background:var(--soft-red);border:none;color:var(--rust);width:30px;height:30px;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.15s}
+.btn-hist-del:hover{background:#fad7d4}
+.manut-input-wrap{background:var(--card);border-radius:16px;padding:18px;margin-bottom:12px;border:1px solid var(--border);position:relative;overflow:hidden}
+.manut-input-wrap::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--fern),var(--lime))}
+.manut-grid{display:flex;flex-direction:column;gap:8px}
+.manut-item{border-radius:12px;padding:14px 16px;border:2px solid var(--border);background:var(--card);transition:all 0.2s}
+.manut-item.ok{border-color:#b3d98a;background:#f4fbed}
+.manut-item.alerta{border-color:var(--straw);background:#fffbf0}
+.manut-item.vencida{border-color:var(--rust);background:#fdf2f1}
+.manut-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.manut-horas-badge{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.manut-item.ok .manut-horas-badge{color:var(--fern)}
+.manut-item.alerta .manut-horas-badge{color:#9a6200}
+.manut-item.vencida .manut-horas-badge{color:var(--rust)}
+.manut-status-tag{font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.manut-item.ok .manut-status-tag{background:#dff0cb;color:#2d5a1b}
+.manut-item.alerta .manut-status-tag{background:#fde9b0;color:#8a4f00}
+.manut-item.vencida .manut-status-tag{background:#fddad8;color:#a02020}
+.manut-desc{font-size:12px;color:var(--muted);margin-bottom:8px;line-height:1.4}
+.manut-progress{background:rgba(0,0,0,0.07);border-radius:4px;height:5px;overflow:hidden;margin-bottom:8px}
+.manut-progress-fill{height:100%;border-radius:4px;transition:width 0.5s}
+.manut-item.ok .manut-progress-fill{background:var(--lime)}
+.manut-item.alerta .manut-progress-fill{background:var(--straw)}
+.manut-item.vencida .manut-progress-fill{background:var(--rust)}
+.manut-info-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted);font-family:'DM Mono',monospace}
+.manut-info-row strong{color:var(--ink)}
+.manut-btn-feita{border:none;padding:6px 11px;border-radius:8px;font-size:10px;font-weight:700;text-transform:uppercase;cursor:pointer;background:var(--fern);color:white;flex-shrink:0}
+.manut-btn-feita:hover{opacity:0.85}
+.manut-resumo{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.manut-resumo-cell{background:var(--card);border-radius:12px;padding:12px;text-align:center;border:1px solid var(--border)}
+.manut-resumo-num{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1}
+.manut-resumo-label{font-size:9px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-top:2px}
+.manut-resumo-cell.ok-cell .manut-resumo-num{color:var(--fern)}
+.manut-resumo-cell.alerta-cell .manut-resumo-num{color:#9a6200}
+.manut-resumo-cell.vencida-cell .manut-resumo-num{color:var(--rust)}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(13,26,7,0.72);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border-radius:22px 22px 0 0;width:100%;max-width:480px;max-height:88vh;overflow-y:auto;padding:0 0 32px;animation:slideUp 0.25s ease}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:14px auto 0}
+.modal-header{background:var(--soil);padding:16px 20px 18px;margin-top:12px}
+.modal-header-tag{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--lime);text-transform:uppercase;margin-bottom:4px}
+.modal-header-title{font-family:'Bebas Neue',sans-serif;font-size:26px;color:white;letter-spacing:2px;line-height:1.1}
+.modal-header-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;font-family:'DM Mono',monospace}
+.modal-horas-block{background:var(--bark);padding:14px 20px;display:flex;align-items:baseline;gap:6px;border-bottom:2px solid var(--lime)}
+.modal-horas-num{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--lime);letter-spacing:3px;line-height:1}
+.modal-horas-unit{font-family:'DM Mono',monospace;font-size:11px;color:rgba(109,179,63,0.6);letter-spacing:1px;text-transform:uppercase}
+.modal-body{padding:18px 20px 0}
+.modal-section-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.modal-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.modal-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
+.modal-info-cell{background:var(--cream);border-radius:10px;padding:10px 12px}
+.modal-info-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.modal-info-value{font-weight:700;font-size:13px;color:var(--ink)}
+.modal-check-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;margin-bottom:6px;font-size:13px;font-weight:500}
+.modal-check-ok{background:var(--soft-green);color:#2d5a1b}.modal-check-nok{background:var(--soft-red);color:var(--rust)}
+.modal-ocorr-item{background:#fff8ec;border:1.5px solid var(--straw);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;color:#7a5900;margin-bottom:6px}
+.modal-obs-box{background:var(--cream);border-radius:10px;padding:12px;font-size:13px;color:var(--ink);line-height:1.5;margin-bottom:16px}
+.modal-footer{padding:0 20px;margin-top:20px;display:flex;gap:10px}
+.btn-modal-fechar{flex:1;padding:14px;border-radius:12px;border:1.5px solid var(--border);background:white;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:background 0.15s}
+.btn-modal-fechar:hover{background:var(--cream)}
+.btn-modal-excluir{flex:1;padding:14px;border-radius:12px;border:none;background:var(--rust);color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:opacity 0.15s}
+.btn-modal-excluir:hover{opacity:0.88}
+.hidden{display:none}
+/* ── RELATÓRIO ── */
+.relatorio-overlay{display:none;position:fixed;inset:0;background:rgba(13,26,7,0.85);z-index:300;align-items:flex-start;justify-content:center;overflow-y:auto;padding:16px 0 40px}
+.relatorio-overlay.open{display:flex}
+.relatorio-box{background:#fff;width:100%;max-width:460px;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.5);margin:auto}
+.rel-header{background:var(--soil);padding:20px 22px 18px;position:relative;overflow:hidden}
+.rel-header::after{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:repeating-linear-gradient(90deg,var(--lime) 0,var(--lime) 18px,transparent 18px,transparent 24px)}
+.rel-logo-row{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.rel-logo-icon{width:30px;height:30px;background:var(--lime);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.rel-logo-text{font-family:'Bebas Neue',sans-serif;font-size:22px;color:white;letter-spacing:2px}
+.rel-logo-text span{color:var(--lime)}
+.rel-doc-tag{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2.5px;color:rgba(109,179,63,0.7);text-transform:uppercase;margin-bottom:4px}
+.rel-doc-title{font-family:'Bebas Neue',sans-serif;font-size:32px;color:white;letter-spacing:2px;line-height:1}
+.rel-doc-sub{font-size:11px;color:rgba(255,255,255,0.45);margin-top:4px;font-family:'DM Mono',monospace}
+.rel-horas-bar{background:var(--bark);padding:14px 22px;display:flex;gap:20px;border-bottom:2px solid var(--lime)}
+.rel-horas-block{text-align:center}
+.rel-horas-num{font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--lime);letter-spacing:3px;line-height:1}
+.rel-horas-num.hori{color:var(--straw)}
+.rel-horas-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;color:rgba(109,179,63,0.5);text-transform:uppercase;margin-top:2px}
+.rel-horas-div{width:1px;background:rgba(255,255,255,0.1);margin:4px 0}
+.rel-body{padding:18px 22px}
+.rel-section{margin-bottom:16px}
+.rel-section-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rel-section-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.rel-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rel-cell{background:var(--cream);border-radius:10px;padding:10px 12px;border:1px solid var(--border)}
+.rel-cell-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.rel-cell-value{font-weight:700;font-size:13px;color:var(--ink);line-height:1.3}
+.rel-cell.full{grid-column:1/-1}
+.rel-turno-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:var(--cream);border-radius:8px;margin-bottom:6px;border:1px solid var(--border)}
+.rel-turno-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--muted);text-transform:uppercase}
+.rel-turno-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--fern);letter-spacing:1px}
+.rel-turno-val.amber{color:var(--straw)}
+.rel-ocorr-item{background:#fff8ec;border:1.5px solid var(--straw);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:700;color:#7a5900;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.rel-obs-box{background:var(--cream);border-radius:10px;padding:12px;font-size:13px;color:var(--ink);line-height:1.55;border:1px solid var(--border)}
+.rel-footer{border-top:1px solid var(--border);padding:14px 22px;display:flex;gap:8px;background:#fafaf8}
+.btn-rel-fechar{flex:1;padding:13px;border-radius:11px;border:1.5px solid var(--border);background:white;color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.btn-rel-enviar{flex:2;padding:13px;border-radius:11px;border:none;background:var(--sky);color:white;font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-rel-excluir{padding:13px 14px;border-radius:11px;border:none;background:var(--soft-red);color:var(--rust);font-family:'DM Sans',sans-serif;font-weight:700;font-size:12px;cursor:pointer}
+.rel-id-stamp{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,0.2);margin-top:12px;letter-spacing:1px}
+.hero-saudacao{font-size:12px;color:rgba(255,255,255,0.55);letter-spacing:0.5px;margin-bottom:4px;font-family:'DM Mono',monospace}
+.hero-saudacao strong{color:var(--lime);font-weight:700}
+.manut-selector-status{display:none;margin-top:8px;padding:8px 12px;border-radius:10px;font-size:12px;font-weight:700;font-family:'DM Mono',monospace;letter-spacing:0.5px;text-align:center}
+.manut-selector-status.ok{background:#eef7e8;color:#2d5a1b;border:1.5px solid #b3d98a;display:block}
+.manut-selector-status.alerta{background:#fffbf0;color:#8a4f00;border:1.5px solid var(--straw);display:block}
+.manut-selector-status.vencida{background:#fdf2f1;color:var(--rust);border:1.5px solid var(--rust);display:block}
+.manut-inline-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:block}
+.manut-inline-wrap{display:flex;gap:8px;align-items:center;margin-bottom:10px}
+.manut-inline-wrap input[type=range]{flex:1;accent-color:var(--fern);height:6px;cursor:pointer;margin-bottom:0;padding:0;border:none;background:transparent}
+.manut-inline-hval{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--fern);letter-spacing:1px;min-width:58px;text-align:right;line-height:1}
+.manut-inline-bar{height:4px;border-radius:2px;background:var(--border);overflow:hidden;margin-bottom:10px}
+.manut-inline-bar-fill{height:100%;background:linear-gradient(90deg,var(--lime),var(--straw));border-radius:2px;transition:width 0.3s}
+.alerta-manut-banner{display:none;border-radius:14px;padding:16px 18px;margin-bottom:12px;position:relative;overflow:hidden}
+.alerta-manut-banner.vencida{background:linear-gradient(135deg,#3d0a0a,#5a1010);border:2px solid var(--rust);animation:bannerPulse 2s ease-in-out infinite}
+.alerta-manut-banner.proxima{background:linear-gradient(135deg,#3d2700,#5a3900);border:2px solid var(--straw);animation:none}
+@keyframes bannerPulse{0%,100%{box-shadow:0 0 0 0 rgba(192,57,43,0.4)}50%{box-shadow:0 0 0 8px rgba(192,57,43,0)}}
+.alerta-manut-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:white;margin-bottom:4px}
+.alerta-manut-banner.proxima .alerta-manut-title{color:var(--straw)}
+.alerta-manut-list{display:flex;flex-direction:column;gap:4px;margin-top:6px}
+.alerta-manut-row{font-size:12px;font-weight:600;color:rgba(255,255,255,0.85);display:flex;align-items:center;gap:6px}
+.alerta-manut-banner::before{content:'🔧';position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:42px;opacity:0.12}
+.field-erro{border-color:var(--rust)!important;background:#fff5f5!important}
+.campo-obrig-aviso{background:#fff0f0;border:1.5px solid #e7afa9;border-radius:10px;padding:12px 14px;margin-bottom:14px;font-size:13px;font-weight:600;color:var(--rust);display:none}
+/* ── LOGIN ── */
+.login-screen{position:fixed;inset:0;background:var(--soil);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;overflow-y:auto}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px}
+.login-logo-icon{width:44px;height:44px;background:var(--lime);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.login-logo-icon svg{width:24px;height:24px}
+.login-logo-text{font-family:'Bebas Neue',sans-serif;font-size:32px;color:white;letter-spacing:3px}
+.login-logo-text span{color:var(--lime)}
+.login-card{background:var(--bark);border-radius:20px;padding:28px 24px;width:100%;max-width:360px;border:1px solid rgba(109,179,63,0.2)}
+.login-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(109,179,63,0.7);margin-bottom:20px;text-align:center}
+.login-field{margin-bottom:14px}
+.login-field label{display:block;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.45);margin-bottom:6px}
+.login-field input{width:100%;padding:15px 16px;background:rgba(255,255,255,0.06);border:1.5px solid rgba(255,255,255,0.12);border-radius:12px;color:white;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:600;transition:border-color 0.2s;-webkit-appearance:none;appearance:none;margin-bottom:0}
+.login-field input:focus{outline:none;border-color:var(--lime);background:rgba(109,179,63,0.08)}
+.login-field input::placeholder{color:rgba(255,255,255,0.2);font-weight:400}
+.login-erro{background:rgba(192,57,43,0.2);border:1px solid rgba(192,57,43,0.5);color:#e07060;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:600;text-align:center;margin-bottom:14px;display:none}
+.btn-login{width:100%;padding:16px;border-radius:12px;border:none;background:var(--fern);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;cursor:pointer;margin-top:6px;transition:opacity 0.2s}
+.btn-login:active{opacity:0.85}
+.login-hint{text-align:center;margin-top:16px;font-size:11px;color:rgba(255,255,255,0.2);font-family:'DM Mono',monospace;letter-spacing:0.5px}
+.login-recentes-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-bottom:10px;text-align:center}
+.login-user-chip{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:background 0.2s}
+.login-user-chip:active{background:rgba(109,179,63,0.15);border-color:rgba(109,179,63,0.4)}
+.login-user-avatar{width:34px;height:34px;background:var(--fern);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:white;flex-shrink:0;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+.login-user-nome{font-weight:700;font-size:14px;color:white}
+.login-user-sub{font-size:10px;color:rgba(255,255,255,0.35);font-family:'DM Mono',monospace}
+.login-sep{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.15);text-align:center;margin:16px 0;text-transform:uppercase;display:flex;align-items:center;gap:8px}
+.login-sep::before,.login-sep::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.08)}
+.nav-user-chip{display:flex;align-items:center;gap:5px;padding:0 8px;border-left:1px solid rgba(109,179,63,0.2);cursor:pointer;flex-shrink:0;min-width:0}
+.nav-user-avatar{width:26px;height:26px;background:var(--fern);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white;flex-shrink:0;font-family:'Bebas Neue',sans-serif}
+.nav-user-nome{font-family:'DM Mono',monospace;font-size:7px;color:rgba(255,255,255,0.55);max-width:52px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+/* ── PWA INSTALL BANNER ── */
+.pwa-banner{position:fixed;bottom:0;left:0;right:0;background:var(--soil);border-top:3px solid var(--lime);padding:14px 16px;z-index:400;display:none;align-items:center;gap:12px;box-shadow:0 -4px 24px rgba(0,0,0,0.4)}
+.pwa-banner.show{display:flex}
+.pwa-banner-icon{width:42px;height:42px;background:var(--lime);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pwa-banner-text{flex:1;min-width:0}
+.pwa-banner-title{font-weight:700;font-size:13px;color:white;line-height:1.2}
+.pwa-banner-sub{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.45);letter-spacing:0.5px;margin-top:2px}
+.pwa-banner-btn{background:var(--lime);color:var(--soil);border:none;padding:10px 16px;border-radius:10px;font-weight:700;font-size:12px;letter-spacing:0.5px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+.pwa-banner-close{background:none;border:none;color:rgba(255,255,255,0.3);font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;line-height:1}
+</style>
+</head>
+<body onload="carregarSessao()">
+
+<!-- TELA DE LOGIN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-logo">
+    <div class="login-logo-icon">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2C8 2 3 5 3 9a5 5 0 0010 0C13 5 8 2 8 2z" fill="white"/><path d="M8 7v6" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10l-2-2" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10l2-2" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="login-logo-text">AGRO<span>PRO</span></span>
+  </div>
+
+  <div class="login-card">
+    <div class="login-title">Acesso ao Sistema</div>
+
+    <!-- Operadores recentes -->
+    <div id="loginRecentes" style="display:none">
+      <div class="login-recentes-title">Entrar como</div>
+      <div id="loginRecentesList"></div>
+      <div class="login-sep">ou novo acesso</div>
+    </div>
+
+    <div class="login-erro" id="loginErro"></div>
+
+    <div class="login-field">
+      <label>Nome do Operador</label>
+      <input type="text" id="loginNome" placeholder="Digite seu nome" autocomplete="off" oninput="this.value=this.value.replace(/[^a-zA-ZÀ-ú\s]/g,'')" onkeydown="if(event.key==='Enter')document.getElementById('loginSenha').focus()" />
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="loginSenha" placeholder="••••••" onkeydown="if(event.key==='Enter')fazerLogin()" />
+    </div>
+    <button class="btn-login" onclick="fazerLogin()">▶ Entrar</button>
+    <div class="login-hint">Senha padrão: 12345</div>
+  </div>
+</div>
+
+<div id="appWrap" style="display:none">
+<div class="nav-top">
+  <div class="nav-logo">
+    <div class="nav-logo-icon">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2C8 2 3 5 3 9a5 5 0 0010 0C13 5 8 2 8 2z" fill="white"/><path d="M8 7v6" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10l-2-2" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/><path d="M8 10l2-2" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    <span class="nav-logo-text">AGRO<span>PRO</span></span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-btn active" id="navBtn1" onclick="aba(1)">📝 Registro</button>
+    <button class="nav-btn" id="navBtn2" onclick="aba(2)">🗂 Histórico</button>
+    <button class="nav-btn" id="navBtn3" onclick="aba(3)">🔧 Manutenção</button>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 6px;gap:2px;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:4px">
+      <div id="syncDot" style="width:7px;height:7px;border-radius:50%;background:#e8821a;transition:all 0.4s;flex-shrink:0"></div>
+      <span id="syncLabel" style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:1px;color:rgba(255,255,255,0.5);text-transform:uppercase;white-space:nowrap">Offline</span>
+    </div>
+    <span id="syncBadge" style="display:none;background:#e8821a;color:white;font-size:7px;font-weight:700;padding:1px 5px;border-radius:4px;letter-spacing:0.5px;white-space:nowrap"></span>
+  </div>
+  <div class="nav-user-chip" onclick="confirmarSair()">
+    <div class="nav-user-avatar" id="navUserAvatar">?</div>
+    <div>
+      <div class="nav-user-nome" id="navUserNome">—</div>
+      <div class="nav-user-sair">Sair</div>
+    </div>
+  </div>
+</div>
+
+<!-- ABA 1 -->
+<div id="aba1" class="container">
+  <div class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-body">
+      <div class="hero-tag">Sistema de Campo</div>
+      <div class="hero-saudacao" id="heroSaudacao">Carregando...</div>
+      <div class="hero-title">Registro<br>Diário</div>
+      <div class="hero-sub" id="heroData">Carregando...</div>
+      <div class="hero-decor"><svg width="110" height="110" viewBox="0 0 120 120" fill="none"><circle cx="60" cy="60" r="55" stroke="white" stroke-width="2"/><path d="M60 10v100M10 60h100M25 25l70 70M95 25l-70 70" stroke="white" stroke-width="1"/><circle cx="60" cy="60" r="20" stroke="white" stroke-width="2"/></svg></div>
+    </div>
+  </div>
+
+  <!-- Banner alerta de manutenção -->
+  <div class="alerta-manut-banner" id="alertaManutBanner">
+    <div class="alerta-manut-title" id="alertaManutTitle">⚠ MANUTENÇÃO VENCIDA</div>
+    <div style="font-size:11px;color:rgba(255,255,255,0.55);font-family:'DM Mono',monospace;margin-bottom:6px" id="alertaManutSub"></div>
+    <div class="alerta-manut-list" id="alertaManutList"></div>
+  </div>
+
+  <div class="card">
+    <div class="campo-obrig-aviso" id="campoObrigAviso">⚠ Preencha todos os campos obrigatórios antes de salvar.</div>
+    <div class="section-label"><span class="dot"></span>Identificação</div>
+    <input type="text" id="operador" placeholder="Nome do operador" oninput="atualizarSaudacao();this.classList.remove('field-erro')" />
+    <div class="flex-row">
+      <select id="maquina" style="flex:1" onchange="this.classList.remove('field-erro')">
+        <option value="">Selecione a máquina...</option>
+        <optgroup label="Tratores">
+          <option>Trator de Pneu</option>
+          <option>Trator de Esteira</option>
+          <option>Trator Compacto</option>
+        </optgroup>
+        <optgroup label="Pulverizadores">
+          <option>Pulverizador Autopropelido</option>
+          <option>Pulverizador de Barra</option>
+          <option>Pulverizador de Arraste</option>
+        </optgroup>
+        <optgroup label="Colheita">
+          <option>Colheitadeira</option>
+          <option>Colhedora de Cana</option>
+          <option>Plataforma de Milho</option>
+          <option>Plataforma Flex</option>
+        </optgroup>
+        <optgroup label="Movimentação de Terra">
+          <option>Pá Carregadeira</option>
+          <option>Retroescavadeira</option>
+          <option>Motoniveladora</option>
+          <option>Escavadeira Hidráulica</option>
+        </optgroup>
+        <optgroup label="Plantio">
+          <option>Plantadeira</option>
+          <option>Semeadora</option>
+          <option>Transplantadora</option>
+        </optgroup>
+        <optgroup label="Transporte">
+          <option>Caminhão Graneleiro</option>
+          <option>Carreta Agrícola</option>
+          <option>Vagão Forrageiro</option>
+        </optgroup>
+        <optgroup label="Outros">
+          <option>Subsolador</option>
+          <option>Grade Aradora</option>
+          <option>Grade Niveladora</option>
+          <option>Rolo Compactador</option>
+          <option>Outro Equipamento</option>
+        </optgroup>
+      </select>
+      <input type="text" id="frota" placeholder="Nº Frota" style="flex:0 0 110px" />
+    </div>
+    <div class="flex-row">
+      <input type="text" id="fazenda" placeholder="Fazenda / Local" style="flex:1" oninput="this.classList.remove('field-erro')" />
+      <input type="text" id="talhao" placeholder="Talhão" style="flex:0 0 110px" oninput="this.classList.remove('field-erro')" />
+    </div>
+    <select id="atividade" onchange="this.classList.remove('field-erro')">
+      <option value="">Selecione a atividade...</option>
+      <option>Plantio</option><option>Colheita</option><option>Pulverização</option>
+      <option>Adubação</option><option>Preparo de Solo</option><option>Transporte</option>
+      <option>Manutenção</option><option>Outro</option>
+    </select>
+    <div>
+      <label class="manut-inline-label">🔧 Intervalo de Manutenção</label>
+      <select id="horiAtualRange" onchange="syncManutSelector()" style="font-size:14px;font-weight:700;margin-bottom:0;border-color:var(--fern)">
+        <option value="0">Selecione o intervalo...</option>
+        <option value="100">100h — Troca de óleo do motor + filtro</option>
+        <option value="200">200h — Arrefecimento + correia</option>
+        <option value="300">300h — Filtro de combustível + ar</option>
+        <option value="400">400h — Sistema hidráulico + fluido</option>
+        <option value="500">500h — Óleo + filtro + verificação geral</option>
+        <option value="600">600h — Freios + embreagem</option>
+        <option value="700">700h — Filtro de ar + lubrificação</option>
+        <option value="800">800h — Sistema elétrico + baterias</option>
+        <option value="900">900h — Óleo transmissão + filtro hidráulico</option>
+        <option value="1000">1000h — Revisão completa 1000h</option>
+        <option value="1100">1100h — Rolamentos + pinos</option>
+        <option value="1200">1200h — Arrefecimento + termostato</option>
+        <option value="1300">1300h — Óleo + filtros + inspeção geral</option>
+        <option value="1400">1400h — Injetores + bomba de combustível</option>
+        <option value="1500">1500h — Revisão intermediária 1500h</option>
+        <option value="1600">1600h — Óleo hidráulico + filtro retorno</option>
+        <option value="1700">1700h — Rodados + folgas</option>
+        <option value="1800">1800h — Óleo + filtros + correia dentada</option>
+        <option value="1900">1900h — Turbocompressor + intercooler</option>
+        <option value="2000">2000h — Grande revisão 2000h</option>
+        <option value="2100">2100h — Filtros gerais + lubrificação</option>
+        <option value="2200">2200h — Exaustão + catalisador</option>
+        <option value="2300">2300h — Óleo + filtro + inspeção elétrica</option>
+        <option value="2400">2400h — Diferencial + câmbio</option>
+        <option value="2500">2500h — Revisão geral completa 2500h</option>
+      </select>
+      <!-- hidden num para compatibilidade com syncHoriAtual -->
+      <input type="hidden" id="horiAtualNum" value="0" />
+      <input type="hidden" id="horiAtualVal" value="0" />
+      <input type="hidden" id="horiAtualBarFill" />
+      <div class="manut-selector-status" id="manutSelectorStatus"></div>
+    </div>
+  </div>
+
+  <div class="horimetro-panel">
+    <div class="hori-header">
+      <span class="hori-header-title">⏱ Horímetro do Turno</span>
+      <div class="hori-status-dot" id="horiDot"></div>
+    </div>
+    <div class="hori-body">
+
+      <!-- Botões Iniciar / Finalizar -->
+      <div class="turno-btns">
+        <button class="btn-iniciar" id="btnIniciar" onclick="iniciarTurno()">
+          <div class="btn-turno-icon">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <path d="M11 9l10 5-10 5V9z" fill="white"/>
+            </svg>
+          </div>
+          <span>Iniciar</span>
+          <span class="btn-turno-hora" id="btnIniciarHora">—</span>
+        </button>
+        <button class="btn-finalizar" id="btnFinalizar" onclick="finalizarTurno()" disabled>
+          <div class="btn-turno-icon">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="14" cy="14" r="13" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>
+              <rect x="9" y="9" width="10" height="10" rx="2" fill="white"/>
+            </svg>
+          </div>
+          <span>Finalizar</span>
+          <span class="btn-turno-hora" id="btnFinalizarHora">—</span>
+        </button>
+      </div>
+
+      <!-- Status em andamento (sem cronômetro) -->
+      <div class="turno-andamento" id="turnoAndamento">
+        <div class="turno-andamento-label">Turno em andamento — iniciado às</div>
+        <div class="turno-andamento-hora" id="andamentoHoraIni">—</div>
+      </div>
+
+      <!-- Resumo após finalizar -->
+      <div class="turno-resumo" id="turnoResumo">
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">🕐 Hora início</span>
+          <span class="turno-resumo-val" id="resumoHoraIni">—</span>
+        </div>
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">🕐 Hora fim</span>
+          <span class="turno-resumo-val" id="resumoHoraFim">—</span>
+        </div>
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">⏱ Total relógio</span>
+          <span class="turno-resumo-val" id="resumoRelogio">—</span>
+        </div>
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">🔢 Horímetro início</span>
+          <span class="turno-resumo-val hori" id="resumoHoriIni">—</span>
+        </div>
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">🔢 Horímetro fim</span>
+          <span class="turno-resumo-val hori" id="resumoHoriFim">—</span>
+        </div>
+        <div class="turno-resumo-row">
+          <span class="turno-resumo-label">📊 Total horímetro</span>
+          <span class="turno-resumo-val hori" id="resumoHoriTotal">—</span>
+        </div>
+      </div>
+
+      <!-- Campos horímetro (preenchidos automaticamente) -->
+      <div class="hori-inputs">
+        <div class="hori-field">
+          <label>Horímetro Inicial</label>
+          <input type="number" id="horiInicio" placeholder="0000" min="0" step="0.1" oninput="calcHoras()" />
+        </div>
+        <div class="hori-field">
+          <label>Horímetro Final</label>
+          <input type="number" id="horiFim" placeholder="0000" min="0" step="0.1" oninput="calcHoras()" />
+        </div>
+      </div>
+      <div class="total-block">
+        <div class="total-number" id="totalHoras">0.0</div>
+        <div class="total-unit">Horas Horímetro</div>
+        <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+      </div>
+      <div class="status-trava" id="statusTrava">⚠ Horímetro final menor que inicial</div>
+      <div class="mini-status" id="miniStatus">Pressione INICIAR para começar o turno</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label"><span class="dot"></span>Ocorrências / Problemas</div>
+    <div class="lista-ocorrencias" id="listaOcorrencias"></div>
+    <div class="ocorrencia-row">
+      <select id="selectOcorrencia">
+        <option value="">Selecione uma ocorrência...</option>
+        <option>Quebra mecânica</option><option>Falta de combustível</option>
+        <option>Problema elétrico</option><option>Pneu furado</option>
+        <option>Problema hidráulico</option><option>Superaquecimento</option>
+        <option>Chuva / Clima adverso</option><option>Aguardando peça</option>
+        <option>Manutenção preventiva</option><option>Acidente de trabalho</option><option>Outro</option>
+      </select>
+      <button class="btn-relatar" onclick="adicionarOcorrencia()">+ Relatar</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-label"><span class="dot"></span>Observações</div>
+    <textarea id="observacoes" rows="3" placeholder="Anotações adicionais, condições do campo, produtividade..."></textarea>
+  </div>
+
+  <div class="card">
+    <div class="section-label"><span class="dot"></span>Ações</div>
+    <button class="btn btn-start" onclick="salvarRegistro()">✅ Salvar Registro no Histórico</button>
+    <button class="btn btn-warning" onclick="limparFormulario()">🔄 Limpar Formulário</button>
+  </div>
+</div>
+
+<!-- ABA 2 -->
+<div id="aba2" class="container hidden">
+  <div class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-body">
+      <div class="hero-tag">Registros Salvos</div>
+      <div class="hero-title">Histórico<br>de Campo</div>
+      <div class="hero-sub" id="heroHistCount">0 registros</div>
+    </div>
+  </div>
+  <div id="historicoLista"></div>
+</div>
+
+<!-- ABA 3 -->
+<div id="aba3" class="container hidden">
+  <div class="hero">
+    <div class="hero-stripe"></div>
+    <div class="hero-body">
+      <div class="hero-tag">Programada</div>
+      <div class="hero-title">Manutenção<br>Preventiva</div>
+      <div class="hero-sub" id="heroManutSub">Informe o horímetro atual abaixo</div>
+    </div>
+  </div>
+
+  <div class="manut-input-wrap">
+    <div class="section-label"><span class="dot"></span>Horímetro Atual da Máquina</div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <input type="number" id="manutHorimetro" placeholder="Ex: 1250" min="0" step="1" oninput="calcManutencoes()" style="flex:1;margin-bottom:0;font-size:18px;font-weight:700" />
+      <span style="font-size:12px;color:var(--muted);white-space:nowrap;flex-shrink:0">horas</span>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:8px">Digite o horímetro atual para ver os alertas de manutenção (100h a 2500h).</p>
+  </div>
+
+  <div class="manut-resumo" id="manutResumo" style="display:none">
+    <div class="manut-resumo-cell ok-cell"><div class="manut-resumo-num" id="resumoOk">0</div><div class="manut-resumo-label">Em dia</div></div>
+    <div class="manut-resumo-cell alerta-cell"><div class="manut-resumo-num" id="resumoAlerta">0</div><div class="manut-resumo-label">Próximas</div></div>
+    <div class="manut-resumo-cell vencida-cell"><div class="manut-resumo-num" id="resumoVencida">0</div><div class="manut-resumo-label">Vencidas</div></div>
+  </div>
+
+  <div class="manut-grid" id="manutGrid">
+    <p style="text-align:center;padding:30px;color:var(--muted);font-family:'DM Mono',monospace;font-size:12px">Informe o horímetro acima para ver as manutenções.</p>
+  </div>
+</div>
+
+<!-- RELATÓRIO -->
+<div class="relatorio-overlay" id="relatorioOverlay" onclick="fecharRelatorio(event)">
+  <div class="relatorio-box" id="relatorioBox">
+    <div class="rel-header">
+      <div class="rel-logo-row">
+        <div class="rel-logo-icon">
+          <svg viewBox="0 0 16 16" fill="none" width="16" height="16"><path d="M8 2C8 2 3 5 3 9a5 5 0 0010 0C13 5 8 2 8 2z" fill="white"/><path d="M8 7v6" stroke="#6db33f" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </div>
+        <span class="rel-logo-text">AGRO<span>PRO</span></span>
+        <span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,0.3);letter-spacing:1px" id="relDataEmissao"></span>
+      </div>
+      <div class="rel-doc-tag">Relatório de Campo</div>
+      <div class="rel-doc-title" id="relTitulo">—</div>
+      <div class="rel-doc-sub" id="relSub">—</div>
+      <div class="rel-id-stamp" id="relIdStamp"></div>
+    </div>
+    <div class="rel-horas-bar">
+      <div class="rel-horas-block" style="flex:1">
+        <div class="rel-horas-num" id="relHoriTotal">0.0</div>
+        <div class="rel-horas-label">Horas Horímetro</div>
+      </div>
+      <div class="rel-horas-div"></div>
+      <div class="rel-horas-block" style="flex:1">
+        <div class="rel-horas-num hori" id="relRelogioTotal">—</div>
+        <div class="rel-horas-label">Total Relógio</div>
+      </div>
+    </div>
+    <div class="rel-body" id="relBody"></div>
+    <div class="rel-footer">
+      <button class="btn-rel-fechar" onclick="fecharRelatorio()">✕ Fechar</button>
+      <button class="btn-rel-enviar" onclick="enviarRelatorio()">📤 Compartilhar</button>
+      <button class="btn-rel-excluir" id="btnRelExcluir">🗑</button>
+    </div>
+  </div>
+</div>
+</div> <!-- /appWrap -->
+
+<!-- PWA INSTALL BANNER -->
+<div class="pwa-banner" id="pwaBanner">
+  <div class="pwa-banner-icon">
+    <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3C12 3 5 7 5 13a7 7 0 0014 0C19 7 12 3 12 3z" fill="#0d1a07"/>
+      <line x1="12" y1="10" x2="12" y2="21" stroke="#0d1a07" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="16" x2="9" y2="13" stroke="#0d1a07" stroke-width="2" stroke-linecap="round"/>
+      <line x1="12" y1="16" x2="15" y2="13" stroke="#0d1a07" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Instalar Agro Pro</div>
+    <div class="pwa-banner-sub">Funciona offline · Acesso rápido</div>
+  </div>
+  <button class="pwa-banner-btn" id="pwaBtnInstalar">📲 Instalar</button>
+  <button class="pwa-banner-close" id="pwaBtnFechar">✕</button>
+</div>
+
+<script>
+// ─── SUPABASE CONFIG ─────────────────────────────────────────
+var SUPA_URL = 'https://wlhgmyfeywnwfhhadugy.supabase.co';
+var SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndsaGdteWZleXdud2ZoaGFkdWd5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNTgzODcsImV4cCI6MjA5MDgzNDM4N30.JVgCo7j45m5WfS0huxWx3wPYwNuaTaez_V4QXgG4-Rg';
+
+// ─── LOGIN ────────────────────────────────────────────────────
+var SENHA_PADRAO = '12345';
+var operadorLogado = null;
+
+function carregarSessao() {
+  // Verifica se já há sessão salva
+  var sessao = localStorage.getItem('agropro_sessao');
+  if (sessao) {
+    operadorLogado = sessao;
+    mostrarApp();
+  } else {
+    carregarOperadoresRecentes();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appWrap').style.display = 'none';
+    setTimeout(function(){ document.getElementById('loginNome').focus(); }, 300);
+  }
+}
+
+function carregarOperadoresRecentes() {
+  var recentes = JSON.parse(localStorage.getItem('agropro_operadores') || '[]');
+  var wrap = document.getElementById('loginRecentes');
+  var lista = document.getElementById('loginRecentesList');
+  if (!recentes.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  lista.innerHTML = recentes.slice(0, 4).map(function(nome) {
+    var ini = nome.trim().split(' ').map(function(p){return p[0];}).join('').toUpperCase().slice(0,2);
+    return '<div class="login-user-chip" onclick="loginRapido(\'' + nome.replace(/'/g,"\\'") + '\')">' +
+      '<div class="login-user-avatar">' + ini + '</div>' +
+      '<div><div class="login-user-nome">' + nome + '</div>' +
+      '<div class="login-user-sub">Toque para entrar</div></div></div>';
+  }).join('');
+}
+
+function loginRapido(nome) {
+  document.getElementById('loginNome').value = nome;
+  document.getElementById('loginSenha').value = SENHA_PADRAO;
+  fazerLogin();
+}
+
+function fazerLogin() {
+  var nome = document.getElementById('loginNome').value.trim();
+  var senha = document.getElementById('loginSenha').value.trim();
+  var erro = document.getElementById('loginErro');
+  if (!nome) { erro.textContent = '⚠ Digite seu nome'; erro.style.display='block'; return; }
+  if (senha !== SENHA_PADRAO) { erro.textContent = '❌ Senha incorreta'; erro.style.display='block'; document.getElementById('loginSenha').value=''; return; }
+  erro.style.display = 'none';
+  // Salva sessão e atualiza lista de recentes
+  operadorLogado = nome;
+  localStorage.setItem('agropro_sessao', nome);
+  var recentes = JSON.parse(localStorage.getItem('agropro_operadores') || '[]');
+  recentes = recentes.filter(function(n){ return n !== nome; });
+  recentes.unshift(nome);
+  localStorage.setItem('agropro_operadores', JSON.stringify(recentes.slice(0, 6)));
+  mostrarApp();
+}
+
+function mostrarApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'block';
+  // Preenche nome do operador automaticamente
+  var campoOp = document.getElementById('operador');
+  if (campoOp && operadorLogado) campoOp.value = operadorLogado;
+  // Avatar na nav
+  var ini = operadorLogado.trim().split(' ').map(function(p){return p[0];}).join('').toUpperCase().slice(0,2);
+  document.getElementById('navUserAvatar').textContent = ini;
+  document.getElementById('navUserNome').textContent = operadorLogado.split(' ')[0];
+  // Inicializa app
+  var agora = new Date();
+  document.getElementById('heroData').textContent = agora.toLocaleDateString('pt-BR', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  atualizarSaudacao();
+  renderHistorico();
+  atualizarStatusConexao();
+  if (navigator.onLine && pendentes.length > 0) setTimeout(tentarSincronizar, 1500);
+}
+
+function confirmarSair() {
+  if (confirm('Sair do sistema?\n' + operadorLogado)) {
+    localStorage.removeItem('agropro_sessao');
+    operadorLogado = null;
+    document.getElementById('loginSenha').value = '';
+    document.getElementById('loginErro').style.display = 'none';
+    carregarOperadoresRecentes();
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appWrap').style.display = 'none';
+  }
+}
+
+function supaInsert(tabela, dados) {
+  return fetch(SUPA_URL + '/rest/v1/' + tabela, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(dados)
+  });
+}
+
+function supaDelete(tabela, id) {
+  return fetch(SUPA_URL + '/rest/v1/' + tabela + '?app_id=eq.' + id, {
+    method: 'DELETE',
+    headers: {
+      'apikey': SUPA_KEY,
+      'Authorization': 'Bearer ' + SUPA_KEY
+    }
+  });
+}
+
+// ─── DADOS LOCAIS ─────────────────────────────────────────────
+var historico = JSON.parse(localStorage.getItem('agropro_hist') || '[]');
+var manutRealizadas = JSON.parse(localStorage.getItem('agropro_manut') || '{}');
+var ocorrencias = [];
+// pendentes = registros salvos localmente mas ainda não enviados ao Supabase
+var pendentes = JSON.parse(localStorage.getItem('agropro_pendentes') || '[]');
+
+// ─── STATUS DE CONEXÃO ────────────────────────────────────────
+function atualizarStatusConexao() {
+  var dot = document.getElementById('syncDot');
+  var label = document.getElementById('syncLabel');
+  var badge = document.getElementById('syncBadge');
+  var n = pendentes.length;
+  if (!dot) return;
+  if (navigator.onLine) {
+    dot.style.background = '#6db33f';
+    dot.style.boxShadow = '0 0 0 3px rgba(109,179,63,0.25)';
+    label.textContent = n > 0 ? 'Sincronizando...' : 'Online';
+  } else {
+    dot.style.background = '#e8821a';
+    dot.style.boxShadow = '0 0 0 3px rgba(232,130,26,0.25)';
+    label.textContent = 'Offline';
+  }
+  if (n > 0) {
+    badge.textContent = n + ' pendente' + (n > 1 ? 's' : '');
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ─── SINCRONIZAÇÃO ────────────────────────────────────────────
+function tentarSincronizar() {
+  if (!navigator.onLine || pendentes.length === 0) { atualizarStatusConexao(); return; }
+  atualizarStatusConexao();
+  var reg = pendentes[0];
+  supaInsert('registros', {
+    app_id: reg.id,
+    operador: reg.operador,
+    maquina: reg.maquina,
+    frota: reg.frota || null,
+    fazenda: reg.fazenda,
+    talhao: reg.talhao,
+    atividade: reg.atividade,
+    hori_inicio: parseFloat(reg.horiInicio) || null,
+    hori_fim: parseFloat(reg.horiFim) || null,
+    horas_trabalhadas: reg.horas,
+    hori_atual: reg.horiAtual || null,
+    checklist: JSON.stringify(reg.checklist),
+    ocorrencias: JSON.stringify(reg.ocorrencias),
+    observacoes: reg.observacoes || null,
+    criado_em: reg.data
+  }).then(function(res) {
+    if (res.ok || res.status === 201 || res.status === 200) {
+      pendentes.shift();
+      localStorage.setItem('agropro_pendentes', JSON.stringify(pendentes));
+      atualizarStatusConexao();
+      if (pendentes.length > 0) setTimeout(tentarSincronizar, 800);
+      else mostrarToast('☁️ ' + (pendentes.length === 0 ? 'Todos registros sincronizados!' : ''), '#1a3a5c');
+    }
+  }).catch(function() { atualizarStatusConexao(); });
+}
+
+window.addEventListener('online', function() {
+  atualizarStatusConexao();
+  setTimeout(tentarSincronizar, 1000);
+});
+window.addEventListener('offline', atualizarStatusConexao);
+
+// ─── TOAST ────────────────────────────────────────────────────
+function mostrarToast(msg, cor) {
+  var t = document.createElement('div');
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:'+(cor||'#2d5a1b')+';color:white;padding:14px 24px;border-radius:12px;font-weight:700;font-size:14px;z-index:9999;box-shadow:0 4px 20px rgba(0,0,0,0.3);letter-spacing:0.5px';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ t.style.transition='opacity 0.4s'; t.style.opacity='0'; setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },400); }, 2500);
+}
+
+function atualizarSaudacao() {
+  var h = new Date().getHours();
+  var saud = h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite';
+  var nome = operadorLogado || (document.getElementById('operador').value || '').trim();
+  var el = document.getElementById('heroSaudacao');
+  if (nome) {
+    el.innerHTML = saud + ', <strong>' + nome.split(' ')[0] + '</strong>!';
+  } else {
+    el.innerHTML = saud + '!';
+  }
+}
+
+function syncManutSelector() {
+  var sel = document.getElementById('horiAtualRange');
+  var val = parseInt(sel.value) || 0;
+  // Sync hidden fields para compatibilidade
+  document.getElementById('horiAtualNum').value = val;
+  document.getElementById('horiAtualVal').value = val;
+  // Atualiza badge de status do seletor
+  var badge = document.getElementById('manutSelectorStatus');
+  if (val > 0) {
+    // Encontra essa manutenção e calcula status
+    var m = null;
+    for (var i = 0; i < MANUTENCOES.length; i++) { if (MANUTENCOES[i].h === val) { m = MANUTENCOES[i]; break; } }
+    if (m) {
+      var ultimaRealizada = manutRealizadas[m.h] || 0;
+      var proximaBase = Math.ceil(val / m.h) * m.h;
+      var proxima = (ultimaRealizada >= proximaBase) ? ultimaRealizada + m.h : proximaBase;
+      var falta = proxima - val;
+      if (falta < 0) {
+        badge.className = 'manut-selector-status vencida';
+        badge.textContent = '🔴 VENCIDA — há ' + Math.abs(falta).toFixed(0) + 'h — Realizar imediatamente!';
+      } else if (falta <= 10) {
+        badge.className = 'manut-selector-status alerta';
+        badge.textContent = '🟡 PRÓXIMA — faltam ' + falta.toFixed(0) + 'h — Agendar manutenção';
+      } else {
+        badge.className = 'manut-selector-status ok';
+        badge.textContent = '🟢 EM DIA — próxima em ' + falta.toFixed(0) + 'h';
+      }
+    } else { badge.className = 'manut-selector-status'; }
+  } else {
+    badge.className = 'manut-selector-status';
+  }
+  // Sync aba manutenção
+  var manutEl = document.getElementById('manutHorimetro');
+  if (manutEl) { manutEl.value = val > 0 ? val : ''; calcManutencoes(); }
+  verificarAlertasManut();
+  // Destaca botão manutenção na nav
+  if (val > 0) {
+    document.getElementById('navBtn3').style.color = '#fff';
+  }
+}
+
+function syncHoriAtual(src) {
+  // mantido por compatibilidade — agora usa syncManutSelector
+  syncManutSelector();
+}
+
+function aba(n) {
+  for (var i = 1; i <= 3; i++) {
+    document.getElementById('aba'+i).classList.toggle('hidden', n !== i);
+    document.getElementById('navBtn'+i).classList.toggle('active', n === i);
+  }
+  if (n === 2) renderHistorico();
+}
+
+// ─── TURNO: INICIAR / FINALIZAR ───────────────────────────────
+var turnoAtivo = false;
+var turnoInicioTS = null;      // timestamp Date() do início real
+var turnoHoriIni = null;       // valor horímetro ao iniciar
+
+function fmt2(n){ return String(n).padStart(2,'0'); }
+function fmtHora(d){ return fmt2(d.getHours())+':'+fmt2(d.getMinutes())+':'+fmt2(d.getSeconds()); }
+function fmtDuracao(ms){
+  var s = Math.floor(ms/1000);
+  var h = Math.floor(s/3600); s -= h*3600;
+  var m = Math.floor(s/60);   s -= m*60;
+  return fmt2(h)+':'+fmt2(m)+':'+fmt2(s);
+}
+
+function iniciarTurno() {
+  var horiIni = parseFloat(document.getElementById('horiInicio').value);
+  if (!horiIni || isNaN(horiIni)) {
+    mostrarToast('⚠ Informe o horímetro inicial antes de iniciar', '#c0392b');
+    document.getElementById('horiInicio').focus();
+    return;
+  }
+  turnoAtivo = true;
+  turnoInicioTS = new Date();
+  turnoHoriIni = horiIni;
+
+  // Atualiza botões
+  var agora = fmtHora(turnoInicioTS);
+  document.getElementById('btnIniciar').disabled = true;
+  document.getElementById('btnIniciarHora').textContent = agora;
+  document.getElementById('btnFinalizar').disabled = false;
+  document.getElementById('btnFinalizarHora').textContent = '—';
+
+  // Mostra painel de andamento (sem cronômetro)
+  document.getElementById('turnoAndamento').style.display = 'block';
+  document.getElementById('andamentoHoraIni').textContent = agora;
+  document.getElementById('turnoResumo').style.display = 'none';
+
+  // Pulsa dot
+  document.getElementById('horiDot').classList.add('active');
+  document.getElementById('miniStatus').textContent = 'Turno em andamento desde ' + agora;
+
+  mostrarToast('▶ Turno iniciado às ' + agora);
+}
+
+function finalizarTurno() {
+  if (!turnoAtivo) return;
+  var horiFim = parseFloat(document.getElementById('horiFim').value);
+  if (!horiFim || isNaN(horiFim)) {
+    mostrarToast('⚠ Informe o horímetro final antes de finalizar', '#c0392b');
+    document.getElementById('horiFim').focus();
+    return;
+  }
+  if (horiFim < turnoHoriIni) {
+    mostrarToast('⚠ Horímetro final menor que o inicial', '#c0392b');
+    return;
+  }
+
+  turnoAtivo = false;
+  var turnoFimTS = new Date();
+
+  var horaIniStr = fmtHora(turnoInicioTS);
+  var horaFimStr = fmtHora(turnoFimTS);
+  var msTotal = turnoFimTS.getTime() - turnoInicioTS.getTime();
+  var hRelogio = (msTotal / 3600000).toFixed(2);
+  var hHorimetro = (horiFim - turnoHoriIni).toFixed(1);
+
+  // Atualiza botões
+  document.getElementById('btnFinalizar').disabled = true;
+  document.getElementById('btnFinalizarHora').textContent = horaFimStr;
+  document.getElementById('horiDot').classList.remove('active');
+
+  // Esconde painel de andamento, mostra resumo
+  document.getElementById('turnoAndamento').style.display = 'none';
+  var resumo = document.getElementById('turnoResumo');
+  resumo.style.display = 'block';
+  document.getElementById('resumoHoraIni').textContent  = horaIniStr;
+  document.getElementById('resumoHoraFim').textContent  = horaFimStr;
+  document.getElementById('resumoRelogio').textContent  = fmtDuracao(msTotal) + ' (' + hRelogio + 'h)';
+  document.getElementById('resumoHoriIni').textContent  = turnoHoriIni + ' h';
+  document.getElementById('resumoHoriFim').textContent  = horiFim + ' h';
+  document.getElementById('resumoHoriTotal').textContent = hHorimetro + ' h';
+
+  // Preenche campos ocultos usados ao salvar
+  document.getElementById('miniStatus').textContent = 'Turno finalizado — ' + horaIniStr + ' → ' + horaFimStr;
+  calcHoras();
+
+  mostrarToast('⏹ Turno finalizado! ' + hHorimetro + 'h horímetro · ' + fmtDuracao(msTotal) + ' relógio');
+}
+
+function calcHoras() {
+  var ini = parseFloat(document.getElementById('horiInicio').value) || 0;
+  var fim = parseFloat(document.getElementById('horiFim').value) || 0;
+  var dot = document.getElementById('horiDot');
+  var trava = document.getElementById('statusTrava');
+  var mini = document.getElementById('miniStatus');
+  var prog = document.getElementById('progressBar');
+  if (fim > 0 && fim < ini) {
+    trava.style.display = 'block';
+    document.getElementById('totalHoras').textContent = '0.0';
+    prog.style.width = '0%';
+    dot.classList.remove('active');
+    return;
+  }
+  trava.style.display = 'none';
+  var total = (fim > ini) ? (fim - ini).toFixed(1) : '0.0';
+  document.getElementById('totalHoras').textContent = total;
+  prog.style.width = Math.min((parseFloat(total) / 12) * 100, 100) + '%';
+}
+
+function adicionarOcorrencia() {
+  var sel = document.getElementById('selectOcorrencia');
+  if (!sel.value) return;
+  ocorrencias.push(sel.value);
+  renderOcorrencias();
+  sel.value = '';
+}
+
+function removerOcorrencia(i) {
+  ocorrencias.splice(i, 1);
+  renderOcorrencias();
+}
+
+function renderOcorrencias() {
+  var html = '';
+  for (var i = 0; i < ocorrencias.length; i++) {
+    html += '<span class="ocorrencia-tag">' + ocorrencias[i] + '<button onclick="removerOcorrencia(' + i + ')">×</button></span>';
+  }
+  document.getElementById('listaOcorrencias').innerHTML = html;
+}
+
+function salvarRegistro() {
+  var operador = document.getElementById('operador').value.trim();
+  var maquina = document.getElementById('maquina').value.trim();
+  var fazenda = document.getElementById('fazenda').value.trim();
+  var talhao = document.getElementById('talhao').value.trim();
+  var atividade = document.getElementById('atividade').value.trim();
+
+  // Highlight campos vazios
+  var campos = ['operador','maquina','fazenda','talhao','atividade'];
+  var nomes = {operador:'Nome do Operador',maquina:'Máquina',fazenda:'Fazenda / Local',talhao:'Talhão',atividade:'Atividade'};
+  var faltando = [];
+  campos.forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el.value.trim()) { el.classList.add('field-erro'); faltando.push(nomes[id]); }
+    else el.classList.remove('field-erro');
+  });
+  if (faltando.length) {
+    var aviso = document.getElementById('campoObrigAviso');
+    aviso.textContent = '⚠ Campos obrigatórios: ' + faltando.join(', ');
+    aviso.style.display = 'block';
+    aviso.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  document.getElementById('campoObrigAviso').style.display = 'none';
+
+  var reg = {
+    id: Date.now(), data: new Date().toISOString(),
+    operador: operador, maquina: maquina,
+    frota: document.getElementById('frota').value,
+    fazenda: fazenda, talhao: talhao, atividade: atividade,
+    horiInicio: document.getElementById('horiInicio').value,
+    horiFim: document.getElementById('horiFim').value,
+    horas: parseFloat(document.getElementById('totalHoras').textContent) || 0,
+    horiAtual: parseInt(document.getElementById('horiAtualRange').value) || 0,
+    horaInicioRelogio: turnoInicioTS ? fmtHora(turnoInicioTS) : '—',
+    horaFimRelogio: document.getElementById('resumoHoraFim').textContent || '—',
+    totalRelogio: document.getElementById('resumoRelogio').textContent || '—',
+    checklist: [], ocorrencias: ocorrencias.slice(),
+    observacoes: document.getElementById('observacoes').value
+  };
+  historico.unshift(reg);
+  localStorage.setItem('agropro_hist', JSON.stringify(historico));
+  // Adiciona à fila de pendentes para sync com Supabase
+  pendentes.push(reg);
+  localStorage.setItem('agropro_pendentes', JSON.stringify(pendentes));
+  atualizarStatusConexao();
+  // Atualiza histórico imediatamente na tela
+  renderHistorico();
+  // Tenta sincronizar imediatamente se tiver internet
+  if (navigator.onLine) setTimeout(tentarSincronizar, 500);
+  mostrarToast(navigator.onLine ? '✅ Salvo! Enviando ao servidor...' : '✅ Salvo localmente — será enviado quando houver sinal');
+  limparFormulario();
+}
+
+function verificarAlertasManut() {
+  var sel = document.getElementById('horiAtualRange');
+  var horiAtual = parseInt(sel.value) || 0;
+  var banner = document.getElementById('alertaManutBanner');
+  if (!horiAtual) { banner.style.display = 'none'; return; }
+  var vencidas = [], proximas = [];
+  for (var i = 0; i < MANUTENCOES.length; i++) {
+    var m = MANUTENCOES[i];
+    var ultimaRealizada = manutRealizadas[m.h] || 0;
+    var proximaBase = Math.ceil(horiAtual / m.h) * m.h;
+    var proxima = (ultimaRealizada >= proximaBase) ? ultimaRealizada + m.h : proximaBase;
+    var falta = proxima - horiAtual;
+    if (falta < 0) vencidas.push({h:m.h, falta:falta, desc:m.desc});
+    else if (falta <= 10) proximas.push({h:m.h, falta:falta, desc:m.desc});
+  }
+  if (!vencidas.length && !proximas.length) { banner.style.display = 'none'; return; }
+  banner.style.display = 'block';
+  if (vencidas.length) {
+    banner.className = 'alerta-manut-banner vencida';
+    document.getElementById('alertaManutTitle').textContent = '🔴 MANUTENÇÃO VENCIDA';
+    document.getElementById('alertaManutSub').textContent = vencidas.length + ' manutenção(ões) vencida(s) — não operar até realizar!';
+    var html = '';
+    vencidas.forEach(function(v){ html += '<div class="alerta-manut-row">🔴 Revisão ' + v.h + 'h — vencida há ' + Math.abs(v.falta).toFixed(0) + 'h</div>'; });
+    proximas.forEach(function(p){ html += '<div class="alerta-manut-row" style="color:var(--straw)">🟡 Revisão ' + p.h + 'h — faltam ' + p.falta.toFixed(0) + 'h</div>'; });
+    document.getElementById('alertaManutList').innerHTML = html;
+  } else {
+    banner.className = 'alerta-manut-banner proxima';
+    document.getElementById('alertaManutTitle').textContent = '🟡 MANUTENÇÃO PRÓXIMA';
+    document.getElementById('alertaManutSub').textContent = proximas.length + ' manutenção(ões) em menos de 10h';
+    var html2 = '';
+    proximas.forEach(function(p){ html2 += '<div class="alerta-manut-row" style="color:var(--straw)">🟡 Revisão ' + p.h + 'h — faltam ' + p.falta.toFixed(0) + 'h</div>'; });
+    document.getElementById('alertaManutList').innerHTML = html2;
+  }
+}
+
+function limparFormulario() {
+  var ids = ['operador','frota','fazenda','talhao','observacoes'];
+  for (var i = 0; i < ids.length; i++) document.getElementById(ids[i]).value = '';
+  document.getElementById('maquina').value = '';
+  document.getElementById('atividade').value = '';
+  document.getElementById('horiInicio').value = '';
+  document.getElementById('horiFim').value = '';
+  document.getElementById('horiAtualRange').value = '0';
+  document.getElementById('horiAtualNum').value = '';
+  document.getElementById('horiAtualVal').value = '0';
+  var badge = document.getElementById('manutSelectorStatus');
+  if (badge) badge.className = 'manut-selector-status';
+  document.getElementById('totalHoras').textContent = '0.0';
+  document.getElementById('campoObrigAviso').style.display = 'none';
+  document.querySelectorAll('.field-erro').forEach(function(el){el.classList.remove('field-erro');});
+  document.getElementById('alertaManutBanner').style.display = 'none';
+  document.getElementById('progressBar').style.width = '0%';
+  document.getElementById('horiDot').classList.remove('active');
+  document.getElementById('miniStatus').textContent = 'Pressione INICIAR para começar o turno';
+  document.getElementById('statusTrava').style.display = 'none';
+  // Reset turno
+  turnoAtivo = false; turnoInicioTS = null; turnoHoriIni = null;
+  document.getElementById('btnIniciar').disabled = false;
+  document.getElementById('btnIniciarHora').textContent = '—';
+  document.getElementById('btnFinalizar').disabled = true;
+  document.getElementById('btnFinalizarHora').textContent = '—';
+  document.getElementById('turnoAndamento').style.display = 'none';
+  document.getElementById('turnoResumo').style.display = 'none';
+  ocorrencias = [];
+  renderOcorrencias();
+}
+
+function renderHistorico() {
+  var el = document.getElementById('historicoLista');
+  var count = document.getElementById('heroHistCount');
+  count.textContent = historico.length + ' registro' + (historico.length !== 1 ? 's' : '');
+  if (!historico.length) {
+    el.innerHTML = '<div class="hist-empty">📋 Nenhum registro ainda.<br>Salve seu primeiro registro de campo.</div>';
+    return;
+  }
+  var html = '';
+  for (var i = 0; i < historico.length; i++) {
+    var r = historico[i];
+    var dt = new Date(r.data).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',year:'numeric'});
+    var ocStr = r.ocorrencias.length ? '⚠ ' + r.ocorrencias.length + ' ocorrência(s)' : '';
+    html += '<div class="hist-card" onclick="abrirRelatorio(' + r.id + ')">';
+    html += '<div class="hist-card-actions">';
+    html += '<button class="btn-hist-del" onclick="event.stopPropagation();excluirRegistro(' + r.id + ')">🗑</button>';
+    html += '</div><div class="hist-card-inner">';
+    html += '<div class="hist-card-title">' + r.operador + '</div>';
+    html += '<div class="hist-card-sub">' + r.maquina + (r.frota ? ' · Frota ' + r.frota : '') + ' · ' + dt + '</div>';
+    if (r.fazenda) html += '<div class="hist-card-sub">' + r.fazenda + (r.talhao ? ' / Talhão ' + r.talhao : '') + '</div>';
+    html += '<div class="hist-card-horas">' + r.horas.toFixed(1) + '</div>';
+    html += '<div class="hist-horas-label">horas trabalhadas</div>';
+    if (ocStr) html += '<div class="hist-card-ocorr">' + ocStr + '</div>';
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+
+function excluirRegistro(id) {
+  if (!confirm('Excluir este registro?')) return;
+  historico = historico.filter(function(r) { return r.id !== id; });
+  localStorage.setItem('agropro_hist', JSON.stringify(historico));
+  renderHistorico();
+}
+
+var relatorioAtualId = null;
+
+function abrirRelatorio(id) {
+  var r = null;
+  for (var i = 0; i < historico.length; i++) { if (historico[i].id === id) { r = historico[i]; break; } }
+  if (!r) return;
+  relatorioAtualId = id;
+
+  var dt = new Date(r.data).toLocaleDateString('pt-BR', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  var dtCurta = new Date(r.data).toLocaleDateString('pt-BR');
+
+  document.getElementById('relDataEmissao').textContent = dtCurta;
+  document.getElementById('relTitulo').textContent = r.operador;
+  document.getElementById('relSub').textContent = r.maquina + (r.frota ? ' · Frota ' + r.frota : '') + ' · ' + dt;
+  document.getElementById('relIdStamp').textContent = 'ID: ' + r.id;
+  document.getElementById('relHoriTotal').textContent = r.horas.toFixed(1) + 'h';
+  document.getElementById('relRelogioTotal').textContent = r.totalRelogio && r.totalRelogio !== '—' ? r.totalRelogio : '—';
+
+  var body = '';
+
+  // Dados de identificação
+  body += '<div class="rel-section"><div class="rel-section-title">Identificação</div><div class="rel-grid">';
+  if (r.fazenda) body += '<div class="rel-cell"><div class="rel-cell-label">Fazenda / Local</div><div class="rel-cell-value">' + r.fazenda + '</div></div>';
+  if (r.talhao) body += '<div class="rel-cell"><div class="rel-cell-label">Talhão</div><div class="rel-cell-value">' + r.talhao + '</div></div>';
+  if (r.atividade) body += '<div class="rel-cell full"><div class="rel-cell-label">Atividade</div><div class="rel-cell-value">' + r.atividade + '</div></div>';
+  body += '</div></div>';
+
+  // Horários do turno
+  var temHorario = r.horaInicioRelogio && r.horaInicioRelogio !== '—';
+  var temHorimetro = r.horiInicio;
+  if (temHorario || temHorimetro) {
+    body += '<div class="rel-section"><div class="rel-section-title">Controle de Turno</div>';
+    if (temHorario) {
+      body += '<div class="rel-turno-row"><span class="rel-turno-label">🕐 Início</span><span class="rel-turno-val">' + r.horaInicioRelogio + '</span></div>';
+      body += '<div class="rel-turno-row"><span class="rel-turno-label">🕐 Fim</span><span class="rel-turno-val">' + (r.horaFimRelogio || '—') + '</span></div>';
+    }
+    if (temHorimetro) {
+      body += '<div class="rel-turno-row"><span class="rel-turno-label">🔢 Horímetro Inicial</span><span class="rel-turno-val amber">' + r.horiInicio + 'h</span></div>';
+      body += '<div class="rel-turno-row"><span class="rel-turno-label">🔢 Horímetro Final</span><span class="rel-turno-val amber">' + r.horiFim + 'h</span></div>';
+      body += '<div class="rel-turno-row"><span class="rel-turno-label">📊 Diferença</span><span class="rel-turno-val amber">' + r.horas.toFixed(1) + 'h</span></div>';
+    }
+    body += '</div>';
+  }
+
+  // Ocorrências
+  if (r.ocorrencias && r.ocorrencias.length) {
+    body += '<div class="rel-section"><div class="rel-section-title">Ocorrências (' + r.ocorrencias.length + ')</div>';
+    for (var k = 0; k < r.ocorrencias.length; k++) {
+      body += '<div class="rel-ocorr-item">⚠ ' + r.ocorrencias[k] + '</div>';
+    }
+    body += '</div>';
+  }
+
+  // Observações
+  if (r.observacoes) {
+    body += '<div class="rel-section"><div class="rel-section-title">Observações</div><div class="rel-obs-box">' + r.observacoes + '</div></div>';
+  }
+
+  // Rodapé do relatório
+  body += '<div style="margin-top:16px;padding-top:12px;border-top:1px dashed var(--border);display:flex;justify-content:space-between;align-items:center">';
+  body += '<span style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--muted);letter-spacing:1px">AGRO PRO · Sistema de Campo</span>';
+  body += '<span style="font-family:\'DM Mono\',monospace;font-size:8px;color:var(--muted)">' + dtCurta + '</span>';
+  body += '</div>';
+
+  document.getElementById('relBody').innerHTML = body;
+  document.getElementById('btnRelExcluir').onclick = function() {
+    if (confirm('Excluir este registro?')) { excluirRegistro(id); fecharRelatorio(); }
+  };
+  document.getElementById('relatorioOverlay').classList.add('open');
+  document.getElementById('relatorioOverlay').scrollTop = 0;
+}
+
+function fecharRelatorio(e) {
+  if (e && e.target !== document.getElementById('relatorioOverlay')) return;
+  document.getElementById('relatorioOverlay').classList.remove('open');
+  relatorioAtualId = null;
+}
+
+function enviarRelatorio() {
+  var r = null;
+  for (var i = 0; i < historico.length; i++) { if (historico[i].id === relatorioAtualId) { r = historico[i]; break; } }
+  if (!r) return;
+  var dt = new Date(r.data).toLocaleDateString('pt-BR');
+  var linhas = [
+    '📋 RELATÓRIO DE CAMPO — AGRO PRO',
+    '────────────────────────',
+    '👤 Operador: ' + r.operador,
+    '🚜 Máquina: ' + r.maquina + (r.frota ? ' (Frota ' + r.frota + ')' : ''),
+    '🌾 Fazenda: ' + (r.fazenda || '—') + (r.talhao ? ' / Talhão ' + r.talhao : ''),
+    '⚙️ Atividade: ' + (r.atividade || '—'),
+    '📅 Data: ' + dt,
+    '────────────────────────',
+    '⏱ Horas Horímetro: ' + r.horas.toFixed(1) + 'h'
+  ];
+  if (r.horaInicioRelogio && r.horaInicioRelogio !== '—') {
+    linhas.push('🕐 Início: ' + r.horaInicioRelogio + '  |  Fim: ' + (r.horaFimRelogio || '—'));
+    if (r.totalRelogio && r.totalRelogio !== '—') linhas.push('⏳ Total Relógio: ' + r.totalRelogio);
+  }
+  if (r.horiInicio) {
+    linhas.push('🔢 Horímetro: ' + r.horiInicio + 'h → ' + r.horiFim + 'h');
+  }
+  if (r.ocorrencias && r.ocorrencias.length) {
+    linhas.push('────────────────────────');
+    linhas.push('⚠️ Ocorrências:');
+    r.ocorrencias.forEach(function(o){ linhas.push('  • ' + o); });
+  }
+  if (r.observacoes) {
+    linhas.push('────────────────────────');
+    linhas.push('📝 Obs: ' + r.observacoes);
+  }
+  linhas.push('────────────────────────');
+  linhas.push('ID: ' + r.id);
+  var texto = linhas.join('\n');
+  if (navigator.share) {
+    navigator.share({ title: 'Relatório — ' + r.operador, text: texto })
+      .catch(function(){});
+  } else {
+    // Fallback: copia para área de transferência
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(texto).then(function(){
+        mostrarToast('📋 Relatório copiado! Cole onde quiser.');
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = texto;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      mostrarToast('📋 Relatório copiado!');
+    }
+  }
+}
+
+var MANUTENCOES = [
+  {h:100, desc:'Troca de óleo do motor + filtro de óleo'},
+  {h:200, desc:'Verificação do sistema de arrefecimento + correia'},
+  {h:300, desc:'Troca de filtro de combustível + filtro de ar'},
+  {h:400, desc:'Inspeção do sistema hidráulico + troca de fluido'},
+  {h:500, desc:'Troca de óleo do motor + filtro + verificação geral'},
+  {h:600, desc:'Inspeção de freios + regulagem de embreagem'},
+  {h:700, desc:'Troca de filtro de ar + lubrificação geral'},
+  {h:800, desc:'Revisão do sistema elétrico + baterias'},
+  {h:900, desc:'Troca de óleo da transmissão + filtro hidráulico'},
+  {h:1000, desc:'Revisão completa 1000h — óleo, filtros, correias, válvulas'},
+  {h:1100, desc:'Inspeção de rolamentos + lubrificação de pinos'},
+  {h:1200, desc:'Troca de fluido de arrefecimento + termostato'},
+  {h:1300, desc:'Troca de óleo do motor + filtros + inspeção geral'},
+  {h:1400, desc:'Verificação de injetores + bomba de combustível'},
+  {h:1500, desc:'Revisão intermediária 1500h — trem de força completo'},
+  {h:1600, desc:'Troca de óleo hidráulico + filtro de retorno'},
+  {h:1700, desc:'Inspeção de rodados + regulagem de folgas'},
+  {h:1800, desc:'Troca de óleo do motor + filtros + correia dentada'},
+  {h:1900, desc:'Verificação de turbocompressor + intercooler'},
+  {h:2000, desc:'Grande revisão 2000h — motor, transmissão, hidráulico'},
+  {h:2100, desc:'Troca de filtros gerais + lubrificação completa'},
+  {h:2200, desc:'Inspeção de sistema de exaustão + catalisador'},
+  {h:2300, desc:'Troca de óleo do motor + filtro + inspeção elétrica'},
+  {h:2400, desc:'Revisão do diferencial + caixa de câmbio'},
+  {h:2500, desc:'Revisão geral completa 2500h — todos os sistemas'}
+];
+
+function calcManutencoes() {
+  var atual = parseFloat(document.getElementById('manutHorimetro').value) || 0;
+  var grid = document.getElementById('manutGrid');
+  var resumo = document.getElementById('manutResumo');
+  var sub = document.getElementById('heroManutSub');
+  if (!atual) {
+    grid.innerHTML = '<p style="text-align:center;padding:30px;color:var(--muted);font-family:\'DM Mono\',monospace;font-size:12px">Informe o horímetro acima.</p>';
+    resumo.style.display = 'none';
+    sub.textContent = 'Informe o horímetro atual abaixo';
+    return;
+  }
+  sub.textContent = 'Horímetro atual: ' + atual.toFixed(0) + 'h';
+  resumo.style.display = 'grid';
+  var nOk = 0, nAlerta = 0, nVencida = 0, html = '';
+  for (var i = 0; i < MANUTENCOES.length; i++) {
+    var m = MANUTENCOES[i];
+    var ultimaRealizada = manutRealizadas[m.h] || 0;
+    var proximaBase = Math.ceil(atual / m.h) * m.h;
+    var proxima = (ultimaRealizada >= proximaBase) ? ultimaRealizada + m.h : proximaBase;
+    var falta = proxima - atual;
+    var pct = Math.min(Math.max(((m.h - falta) / m.h) * 100, 0), 100);
+    var cls, statusTag, statusLabel;
+    if (falta < 0) {
+      cls = 'vencida'; statusTag = '🔴 VENCIDA'; statusLabel = 'Vencida há ' + Math.abs(falta).toFixed(0) + 'h'; nVencida++;
+    } else if (falta <= 10) {
+      cls = 'alerta'; statusTag = '🟡 PRÓXIMA'; statusLabel = 'Faltam ' + falta.toFixed(0) + 'h'; nAlerta++;
+    } else {
+      cls = 'ok'; statusTag = '🟢 EM DIA'; statusLabel = 'Faltam ' + falta.toFixed(0) + 'h'; nOk++;
+    }
+    html += '<div class="manut-item ' + cls + '">';
+    html += '<div class="manut-item-header"><span class="manut-horas-badge">' + m.h + 'h</span>';
+    html += '<div style="display:flex;align-items:center;gap:8px"><span class="manut-status-tag">' + statusTag + '</span>';
+    html += '<button class="manut-btn-feita" onclick="registrarManutencao(' + m.h + ',' + atual + ')">✓ Feita</button></div></div>';
+    html += '<div class="manut-desc">' + m.desc + '</div>';
+    html += '<div class="manut-progress"><div class="manut-progress-fill" style="width:' + pct + '%"></div></div>';
+    html += '<div class="manut-info-row"><span>' + statusLabel + '</span><span>Próxima: <strong>' + proxima.toFixed(0) + 'h</strong></span></div>';
+    html += '</div>';
+  }
+  grid.innerHTML = html;
+  document.getElementById('resumoOk').textContent = nOk;
+  document.getElementById('resumoAlerta').textContent = nAlerta;
+  document.getElementById('resumoVencida').textContent = nVencida;
+}
+
+function registrarManutencao(intervalo, horaAtual) {
+  if (!confirm('Confirmar manutenção de ' + intervalo + 'h realizada em ' + horaAtual.toFixed(0) + 'h?')) return;
+  manutRealizadas[intervalo] = horaAtual;
+  localStorage.setItem('agropro_manut', JSON.stringify(manutRealizadas));
+  calcManutencoes();
+}
+</script>
+
+<script>
+// ── SERVICE WORKER ─────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+      console.log('SW registrado:', reg.scope);
+    }).catch(function(err) {
+      console.warn('SW falhou:', err);
+    });
+  });
+}
+
+// ── PWA INSTALL PROMPT ─────────────────────────────────────────
+var deferredPrompt = null;
+var pwaBanner = document.getElementById('pwaBanner');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Só mostra se o usuário ainda não instalou
+  if (!localStorage.getItem('agropro_pwa_dispensado')) {
+    setTimeout(function() { pwaBanner.classList.add('show'); }, 2000);
+  }
+});
+
+document.getElementById('pwaBtnInstalar').addEventListener('click', function() {
+  if (!deferredPrompt) return;
+  pwaBanner.classList.remove('show');
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(result) {
+    if (result.outcome === 'accepted') {
+      mostrarToast('✅ Agro Pro instalado com sucesso!');
+    }
+    deferredPrompt = null;
+  });
+});
+
+document.getElementById('pwaBtnFechar').addEventListener('click', function() {
+  pwaBanner.classList.remove('show');
+  localStorage.setItem('agropro_pwa_dispensado', '1');
+});
+
+// Detecta quando já está instalado (standalone)
+window.addEventListener('appinstalled', function() {
+  pwaBanner.classList.remove('show');
+  mostrarToast('✅ Agro Pro instalado!');
+  deferredPrompt = null;
+});
+</script>
+</body>
+</html>
